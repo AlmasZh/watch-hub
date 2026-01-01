@@ -1,0 +1,16 @@
+[service] type(scope): short summary
+
+# Examples:
+# [auth] feat(jwt): add refresh token support
+# [chat] fix(socket): handle reconnect properly
+# [streaming] chore: add migration runner at startup
+#
+# Allowed types:
+#   feat     - a new feature
+#   fix      - a bug fix
+#   chore    - non-code changes (configs, deps)
+#   docs     - documentation changes
+#   refactor - code structure change
+#   style    - formatting, styling only
+#   test     - adding/modifying tests
+#   perf     - performance improvements
