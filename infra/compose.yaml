@@ -1,0 +1,23 @@
+name: watch-together
+
+services:
+  db:
+    image: postgres
+    restart: 'unless-stopped'
+    secrets:
+      - db_password
+    environment:
+      - POSTGRES_INITDB_ARGS=--auth-host=scram-sha-256 --auth-local=scram-sha-256
+      - POSTGRES_PASSWORD_FILE=/run/secrets/db_password
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_DB=${DB_NAME}
+
+    networks:
+      - wt-internal
+
+secrets:
+  db_password:
+    file: ./secrets/db_password.txt
+
+networks:
+  wt-internal:
