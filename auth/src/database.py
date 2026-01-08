@@ -2,8 +2,9 @@ from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sess
 from typing import Annotated
 from fastapi import Depends
 
-from config import settings
-from models import Base
+from .config import settings
+from .models import Base
+from .users.models import User
 
 
 engine = create_async_engine(settings.DB_URL, echo=True)
