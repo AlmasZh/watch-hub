@@ -14,7 +14,7 @@ print(settings.DB_URL)
 print(settings.DB_URL)
 print(settings.DB_URL)
 async def get_session():
-    async with new_session as session:
+    async with new_session() as session:
         yield session
 
 SessionDep = Annotated[AsyncSession, Depends(get_session)]
