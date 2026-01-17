@@ -10,9 +10,6 @@ from .users.models import User
 engine = create_async_engine(settings.DB_URL, echo=True)
 new_session = async_sessionmaker(engine, expire_on_commit=False)
 
-print(settings.DB_URL)
-print(settings.DB_URL)
-print(settings.DB_URL)
 async def get_session():
     async with new_session() as session:
         yield session
