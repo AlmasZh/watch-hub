@@ -14,6 +14,7 @@ class Settings:
 
         self.JWT_PUBLIC_KEY = self._get_secret("jwt_public")
         self.JWT_PRIVATE_KEY = self._get_secret("jwt_private")
+        self.JWT_ALGORITHM = "RS256"
         
         self.APP_ENV = os.getenv("APP_ENV")
 

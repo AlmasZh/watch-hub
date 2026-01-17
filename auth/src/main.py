@@ -1,9 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
-import uvicorn
 
-from src.database import setup_database
+from .database import setup_database
+from .auth.router import router as auth_router
 
 origins = [
     "http://localhost:3000",
@@ -25,6 +25,7 @@ app.add_middleware(
     allow_headers="*",
 )
 
+app.include_router(auth_router, prefix="/auth")
 
 @app.get('/')
 def root():

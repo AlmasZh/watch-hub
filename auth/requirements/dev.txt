@@ -3,3 +3,4 @@ uvicorn[standard]
 asyncpg
 sqlalchemy
 dotenv
+pyjwt[crypto]
