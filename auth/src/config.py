@@ -15,6 +15,10 @@ class Settings:
         self.JWT_PUBLIC_KEY = self._get_secret("jwt_public")
         self.JWT_PRIVATE_KEY = self._get_secret("jwt_private")
         self.JWT_ALGORITHM = "RS256"
+        self.JWT_ACCESS_TOKEN_EXPIRATION = 15 # minutes
+        self.JWT_REFRESH_TOKEN_EXPIRATION = 10080 # 10080 minutes = 1 week
+
+        self.USE_SECURE_COOKIES = os.getenv("USE_SECURE_COOKIES", "True")
         
         self.APP_ENV = os.getenv("APP_ENV")
 
