@@ -1,6 +1,9 @@
 fastapi
 uvicorn[standard]
+pydantic[email]
 asyncpg
 sqlalchemy
 dotenv
 pyjwt[crypto]
+bcrypt
+passlib[argon2]
