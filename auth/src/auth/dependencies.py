@@ -7,7 +7,7 @@ from ..database import SessionDep
 from ..users.models import User
 from .utils import verify_jwt_token
 
-async def get_current_user(access_token: Annotated[str, Depends(oauth2_scheme)], db: SessionDep = SessionDep):
+async def get_current_user(access_token: Annotated[str, Depends(oauth2_scheme)], db: SessionDep = SessionDep) -> User:
     if not access_token:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
 

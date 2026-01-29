@@ -13,12 +13,13 @@ from .service import create_user
 
 router = APIRouter(tags=["auth"])
 
-@router.get("/authenticate")
-async def authenticate(current_user = Depends(get_current_user)):
-    return {"user", current_user}
+@router.get("/verify")
+async def verify(current_user: User = Depends(get_current_user)):
+    return current_user
 
 # @router.post("/login")
 # async def login(user: UserLogin):
+
 
 @router.post("/signup", response_model=UserSignUpResponse, status_code=status.HTTP_201_CREATED)
 async def signup(response: Response, user: UserSignUp, db: SessionDep):
