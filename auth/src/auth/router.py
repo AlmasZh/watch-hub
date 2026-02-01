@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Response, Depends, status, Cookie, HTTPException
-from fastapi.responses import RedirectResponse
+from fastapi.security.oauth2 import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Annotated
 
@@ -8,8 +8,8 @@ from src.database import SessionDep
 from src.config import settings
 from .utils import verify_jwt_token, generate_jwt_token
 from .dependencies import get_current_user
-from .schemas import UserSignUpResponse, UserSignUp
-from .service import create_user
+from .schemas import UserSignUpResponse, UserSignUp, UserLogin, UserLoginResponse
+from .service import create_user, authenticate_user
 
 router = APIRouter(tags=["auth"])
 
@@ -17,8 +17,26 @@ router = APIRouter(tags=["auth"])
 async def verify(current_user: User = Depends(get_current_user)):
     return current_user
 
-# @router.post("/login")
-# async def login(user: UserLogin):
+@router.post("/login", response_model=UserLoginResponse)
+async def login(response: Response, user: Annotated[OAuth2PasswordRequestForm, Depends()], db: SessionDep):
+    selected_user = await authenticate_user(user, db)
+
+    access_token = generate_jwt_token(selected_user.id, settings.JWT_ACCESS_TOKEN_EXPIRATION)
+    refresh_token = generate_jwt_token(selected_user.id, settings.JWT_REFRESH_TOKEN_EXPIRATION)
+
+    response.set_cookie(
+        key="refresh_token",
+        value=refresh_token, 
+        httponly=True,
+        secure=settings.USE_SECURE_COOKIES,
+        samesite="lax",
+        max_age=settings.JWT_REFRESH_TOKEN_EXPIRATION * 60,
+    )
+    
+    return {
+        "access_token": access_token,
+        "token_type": "bearer"
+    }
 
 
 @router.post("/signup", response_model=UserSignUpResponse, status_code=status.HTTP_201_CREATED)

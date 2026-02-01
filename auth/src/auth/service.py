@@ -1,10 +1,12 @@
 from fastapi import HTTPException, status
+from fastapi.security.oauth2 import OAuth2PasswordRequestForm
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select, or_
 
 from .schemas import UserSignUp
 from ..users.models import User
-from .utils import get_password_hash
+from .utils import get_password_hash, verify_password_hash
 
 async def create_user(user: UserSignUp, db: AsyncSession):
     user_dict = user.model_dump(exclude={"password"})
@@ -29,3 +31,15 @@ async def create_user(user: UserSignUp, db: AsyncSession):
     await db.refresh(db_user)
 
     return db_user
+
+async def authenticate_user(user: OAuth2PasswordRequestForm, db: AsyncSession) -> User:
+    print(f'\n\nUser: {user}\n\n')
+    stmt = select(User).where(or_(User.username == user.username, User.email == user.username))
+    res = await db.execute(stmt)
+    selected_user = res.scalar_one_or_none()
+    print(f'\n\nSelected User: {selected_user}\n\n')
+    
+    if selected_user is None or not verify_password_hash(user.password, selected_user.password):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Username or password is incorrect")
+
+    return selected_user
