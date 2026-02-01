@@ -1,6 +1,5 @@
 from fastapi import APIRouter, Response, Depends, status, Cookie, HTTPException
 from fastapi.security.oauth2 import OAuth2PasswordRequestForm
-from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Annotated
 
 from src.users.models import User
@@ -8,7 +7,7 @@ from src.database import SessionDep
 from src.config import settings
 from .utils import verify_jwt_token, generate_jwt_token
 from .dependencies import get_current_user
-from .schemas import UserSignUpResponse, UserSignUp, UserLogin, UserLoginResponse
+from .schemas import UserSignUpResponse, UserSignUp, UserLoginResponse
 from .service import create_user, authenticate_user
 
 router = APIRouter(tags=["auth"])
@@ -61,7 +60,7 @@ async def signup(response: Response, user: UserSignUp, db: SessionDep):
     }
 
 @router.post("/refresh-token")
-async def refresh_access_token(refresh_token: Annotated[str, Cookie()] = None, db: SessionDep = SessionDep):
+async def refresh_access_token(refresh_token: Annotated[str | None, Cookie()] = None):
     if not refresh_token:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Refresh token missing")
     
