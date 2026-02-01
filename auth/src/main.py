@@ -4,6 +4,7 @@ from contextlib import asynccontextmanager
 
 from .database import setup_database
 from .auth.router import router as auth_router
+from .users.router import router as users_router
 
 origins = [
     "http://localhost:3000",
@@ -26,6 +27,7 @@ app.add_middleware(
 )
 
 app.include_router(auth_router, prefix="/auth")
+app.include_router(users_router, prefix="/users")
 
 @app.get('/')
 def root():
