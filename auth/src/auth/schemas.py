@@ -11,7 +11,7 @@ class UserBase(BaseModel):
 
     email: EmailStr
     username: Annotated[str, Field(min_length=2, max_length=50), AfterValidator(username_validator)]
-    display_name: str | None = Field(min_length=2, max_length=50, default=None)
+    display_name: str = Field(min_length=2, max_length=50, default=None)
     date_of_birth: PastDate
 
 class UserLogin(BaseModel):
@@ -21,9 +21,6 @@ class UserLogin(BaseModel):
 class UserSignUp(UserBase):
     password: SecretStr = Field(min_length=8, max_length=100)
 
-class UserSignUpResponse(BaseModel):
+class AccessTokenResponse(BaseModel):
     access_token: str
     token_type: str = "bearer"
-
-class UserLoginResponse(UserSignUpResponse):
-    pass

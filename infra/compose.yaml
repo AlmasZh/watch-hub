@@ -5,7 +5,7 @@ services:
     image: postgres
     restart: 'unless-stopped'
     secrets:
-      - source: db_password
+      - db_password
     environment:
       - POSTGRES_INITDB_ARGS=--auth-host=scram-sha-256 --auth-local=scram-sha-256
       - POSTGRES_PASSWORD_FILE=/run/secrets/db_password
