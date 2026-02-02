@@ -5,7 +5,7 @@ from typing import Annotated
 from src.users.models import User
 from src.database import SessionDep
 from src.config import settings
-from .utils import verify_jwt_token, generate_jwt_token
+from .utils import get_current_token_payload, generate_jwt_token
 from .dependencies import get_current_user
 from .schemas import UserSignUpResponse, UserSignUp, UserLoginResponse
 from .service import create_user, authenticate_user
@@ -64,8 +64,8 @@ async def refresh_access_token(refresh_token: Annotated[str | None, Cookie()] = 
     if not refresh_token:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Refresh token missing")
     
-    payload = verify_jwt_token(refresh_token)
-    user_id = payload.get("sub")
+    payload = get_current_token_payload(refresh_token)
+    user_id = payload.sub
     new_access_token = generate_jwt_token(user_id, settings.JWT_ACCESS_TOKEN_EXPIRATION)
     
     return {

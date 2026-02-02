@@ -1,11 +1,20 @@
 import jwt
-import asyncio
 from typing import Dict, Any
 from fastapi import HTTPException, status
 from datetime import datetime, timedelta, timezone
 from passlib.context import CryptContext
+from pydantic import BaseModel, ConfigDict
 
 from src.config import settings
+
+
+class TokenPayload(BaseModel):
+    sub: str
+    iat: int
+    exp: int
+    iss: str
+    
+    model_config = ConfigDict(extra="ignore")
 
 def generate_jwt_token(sub: str | int, expires_in_minutes: int):
     now = datetime.now(timezone.utc)
@@ -14,17 +23,27 @@ def generate_jwt_token(sub: str | int, expires_in_minutes: int):
         "sub": str(sub),
         "iat": now,
         "exp": now + timedelta(minutes=expires_in_minutes),
-        "iss": "watch-together"
+        "iss": settings.JWT_ISSUER
     }
 
-    token = jwt.encode(payload=payload, key=settings.JWT_PRIVATE_KEY, algorithm=settings.JWT_ALGORITHM)
+    token = jwt.encode(
+        payload=payload,
+        key=settings.JWT_PRIVATE_KEY,
+        algorithm=settings.JWT_ALGORITHM
+    )
 
     return token
 
-def verify_jwt_token(token: str) -> Dict[str, Any]:
+def get_current_token_payload(token: str) -> TokenPayload:
     try:
-        payload = jwt.decode(token, key=settings.JWT_PUBLIC_KEY, algorithms=["RS256"])
-        return payload
+        payload_data = jwt.decode(
+            token, 
+            key=settings.JWT_PUBLIC_KEY,
+            algorithms=["RS256"],
+            options={"require": ["exp", "iss", "sub"]}
+        )
+        
+        return TokenPayload.model_validate(payload_data)
     except jwt.ExpiredSignatureError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -37,7 +56,7 @@ def verify_jwt_token(token: str) -> Dict[str, Any]:
             detail="Invalid authentication credentials",
             headers={"WWW-Authenticate": "Bearer"}
         )
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Internal server error during verification"

@@ -5,11 +5,11 @@ from sqlalchemy import select
 from .security import oauth2_scheme
 from ..database import SessionDep
 from ..users.models import User
-from .utils import verify_jwt_token
+from .utils import get_current_token_payload
 
 async def get_current_user(access_token: Annotated[str, Depends(oauth2_scheme)], db: SessionDep) -> User:
-    payload = verify_jwt_token(access_token)
-    sub = payload.get("sub")
+    payload = get_current_token_payload(access_token)
+    sub = payload.sub
     
     if not sub:
         raise HTTPException(
