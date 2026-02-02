@@ -1,3 +1,10 @@
 fastapi
 uvicorn[standard]
+python-multipart
+pydantic[email]
 asyncpg
+sqlalchemy
+dotenv
+pyjwt[crypto]
+bcrypt
+passlib[argon2]
