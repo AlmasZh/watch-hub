@@ -3,7 +3,7 @@ from typing import Dict, Any
 from fastapi import HTTPException, status
 from datetime import datetime, timedelta, timezone
 from passlib.context import CryptContext
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, ValidationError
 
 from src.config import settings
 
@@ -50,7 +50,7 @@ def get_current_token_payload(token: str) -> TokenPayload:
             detail="Token has expired",
             headers={"WWW-Authenticate": "Bearer"}
         )
-    except jwt.InvalidTokenError as e:
+    except (jwt.InvalidTokenError, ValidationError):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid authentication credentials",
