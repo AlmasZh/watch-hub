@@ -11,13 +11,43 @@ services:
       - POSTGRES_PASSWORD_FILE=/run/secrets/db_password
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_DB=${DB_NAME}
-
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${DB_USER} -d $${DB_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    volumes:
+      - ./scripts/init_sql.sh:/docker-entrypoint-initdb.d/init-user-db.sh
     networks:
       - wt-internal
+  auth:
+    build:
+      context: ../auth/
+      dockerfile: Dockerfile.dev
+    restart: 'on-failure'
+    volumes:
+      - "../auth:/app"
+    secrets:
+      - db_password
+      - jwt_private
+      - jwt_public
+    ports:
+      - "8080:8080"
+    networks:
+      - wt-internal
+    depends_on: 
+      db:
+        condition: service_healthy
+        restart: true
 
 secrets:
   db_password:
     file: ./secrets/db_password.txt
+  jwt_private:
+    file: ./secrets/jwt_private.pem
+  jwt_public:
+    file: ./secrets/jwt_public.pem
 
 networks:
   wt-internal:

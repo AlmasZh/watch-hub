@@ -1,13 +1,34 @@
 from fastapi import FastAPI
-import uvicorn
+from fastapi.middleware.cors import CORSMiddleware
+from contextlib import asynccontextmanager
 
+from .database import setup_database
+from .auth.router import router as auth_router
+from .users.router import router as users_router
 
-app = FastAPI()
+origins = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+]
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await setup_database()
+    yield
+
+app = FastAPI(lifespan=lifespan)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods="*",
+    allow_headers="*",
+)
+
+app.include_router(auth_router, prefix="/auth")
+app.include_router(users_router, prefix="/users")
 
 @app.get('/')
 def root():
     return {"message": "ok"}
-
-
-if __name__ == '__main__':
-    uvicorn.run('main:app', host="0.0.0.0", port=8080, reload=True)

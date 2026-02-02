@@ -1,16 +1,38 @@
-[service] type(scope): short summary
-
-# Examples:
-# [auth] feat(jwt): add refresh token support
-# [chat] fix(socket): handle reconnect properly
-# [streaming] chore: add migration runner at startup
+# <type>(<scope>): <subject>
 #
-# Allowed types:
-#   feat     - a new feature
-#   fix      - a bug fix
-#   chore    - non-code changes (configs, deps)
-#   docs     - documentation changes
-#   refactor - code structure change
-#   style    - formatting, styling only
-#   test     - adding/modifying tests
-#   perf     - performance improvements
+# <body>
+#
+# <footer>
+#
+# --- COMMIT MESSAGE TEMPLATE ---
+# 1. HEADER: <type>(<scope>): <subject>
+#    - type:  See allowed types below.
+#    - scope: The specific service/lib name (e.g., auth, payment, shared).
+#    - subject: Imperative, lowercase, no dot at end (e.g., "add login", not "Added login.").
+#
+#    Examples:
+#      feat(auth): add refresh token support
+#      fix(chat): handle socket reconnection
+#      chore(ci): update github actions pipeline
+#      style(payment): formatting fixes only
+#
+# 2. BODY: (Optional)
+#    - Include motivation for the change and contrast with previous behavior.
+#    - Wrap lines at 72 characters.
+#
+# 3. FOOTER: (Optional)
+#    - Reference issues: "Closes #123"
+#    - Breaking Changes: Start with "BREAKING CHANGE:" to trigger a MAJOR version bump.
+#
+# --- ALLOWED TYPES ---
+#   feat     - A new feature (triggers MINOR release)
+#   fix      - A bug fix (triggers PATCH release)
+#   perf     - Performance improvement (triggers PATCH release)
+#   revert   - Reverts a previous commit
+#   docs     - Documentation only
+#   style    - White-space, formatting, missing semi-colons, etc
+#   refactor - A code change that neither fixes a bug nor adds a feature
+#   test     - Adding missing tests or correcting existing tests
+#   build    - Changes that affect the build system (npm, maven, gradle)
+#   chore    - Other changes that don't modify src or test files
+#   ci       - Changes to CI configuration files and scripts
