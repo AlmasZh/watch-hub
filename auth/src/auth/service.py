@@ -33,11 +33,9 @@ async def create_user(user: UserSignUp, db: AsyncSession):
     return db_user
 
 async def authenticate_user(user: OAuth2PasswordRequestForm, db: AsyncSession) -> User:
-    print(f'\n\nUser: {user}\n\n')
     stmt = select(User).where(or_(User.username == user.username, User.email == user.username))
     res = await db.execute(stmt)
     selected_user = res.scalar_one_or_none()
-    print(f'\n\nSelected User: {selected_user}\n\n')
     
     if selected_user is None or not verify_password_hash(user.password, selected_user.password):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Username or password is incorrect")
