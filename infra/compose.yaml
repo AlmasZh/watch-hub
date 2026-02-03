@@ -40,6 +40,17 @@ services:
       db:
         condition: service_healthy
         restart: true
+  web:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile.dev
+    restart: 'on-failure'
+    ports:
+      - "3000:3000"
+    volumes:
+      - "../frontend:/app"
+    networks:
+      - wt-internal
 
 secrets:
   db_password:
