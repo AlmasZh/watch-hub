@@ -4,6 +4,15 @@ const nextConfig: NextConfig = {
   /* config options here */
   output: "standalone",
   reactCompiler: true,
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+        pathname: "/**",
+      },
+    ],
+  },
 };
 
 export default nextConfig;
