@@ -1,12 +1,6 @@
 "use client";
 
 import { useSidebar } from "@/context/SidebarContext";
-
-
-// I'll define cn locally for now or check if lib/utils exists.
-// Checking file structure earlier, I didn't see src/lib.
-// I'll just use clsx and tailwind-merge here too or create src/lib/utils.ts.
-
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -19,16 +13,19 @@ export default function MainLayoutWrapper({
 }: {
     children: React.ReactNode;
 }) {
-    const { isExpanded } = useSidebar();
+    // The sidebar is now a fixed dual-column layout.
+    // Rail (72px) + Social List (240px) = 312px
 
     return (
         <main
             className={cn(
                 "transition-all duration-300 ease-in-out min-h-screen",
-                isExpanded ? "ml-[250px]" : "ml-[80px]"
+                "ml-[312px]" // Fixed combined width of Rail and Social List
             )}
         >
-            {children}
+            <div className="max-w-7xl mx-auto py-6">
+                {children}
+            </div>
         </main>
     );
 }
