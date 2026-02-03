@@ -13,7 +13,7 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-violet-600 to-blue-600 px-4 py-12 sm:px-6 lg:px-8">
+        <div className="flex min-h-screen items-center justify-center bg-linear-to-br from-violet-600 to-blue-600 px-4 py-12 sm:px-6 lg:px-8">
             <div className="w-full max-w-md space-y-8 bg-[#2b2d31] p-10 rounded-xl shadow-lg">
                 <div className="text-center">
                     <h2 className="mt-2 text-3xl font-bold tracking-tight text-white">
@@ -75,7 +75,7 @@ export default function LoginPage() {
                     <div>
                         <button
                             type="submit"
-                            className="flex w-full justify-center rounded-md bg-[#5865F2] px-3 py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#4752c4] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5865F2] transition-colors duration-200"
+                            className="flex w-full justify-center rounded-md bg-[#5865F2] px-3 py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#4752c4] focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-[#5865F2] transition-colors duration-200"
                         >
                             Log In
                         </button>
