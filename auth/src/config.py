@@ -23,6 +23,8 @@ class Settings:
         
         self.APP_ENV = os.getenv("APP_ENV")
 
+        self.API_PREFIX = "/api/auth"
+
         self._validate_config()
     
     def _get_secret(self, secret_name):

@@ -5,18 +5,22 @@ from contextlib import asynccontextmanager
 from .database import setup_database
 from .auth.router import router as auth_router
 from .users.router import router as users_router
+from .config import settings
 
 origins = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
+    "http://wt.com",
+    "https://wt.com",
 ]
+prefix = settings.API_PREFIX
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await setup_database()
     yield
 
-app = FastAPI(lifespan=lifespan)
+app = FastAPI(lifespan=lifespan, docs_url=f'{prefix}/docs', openapi_url=f'{prefix}/openapi.json')
 
 app.add_middleware(
     CORSMiddleware,
@@ -26,9 +30,9 @@ app.add_middleware(
     allow_headers="*",
 )
 
-app.include_router(auth_router, prefix="/auth")
-app.include_router(users_router, prefix="/users")
+app.include_router(auth_router, prefix=f'{prefix}')
+app.include_router(users_router, prefix=f'{prefix}/users')
 
-@app.get('/')
-def root():
+@app.get(f'{prefix}/health')
+def health_check():
     return {"message": "ok"}
