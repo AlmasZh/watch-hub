@@ -18,6 +18,10 @@ import {
     Bell,
     User,
     ChevronDown,
+    Search,
+    UserPlus,
+    X,
+    Check
 } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { clsx, type ClassValue } from "clsx";
@@ -31,27 +35,16 @@ export default function Sidebar() {
     const { isExpanded } = useSidebar();
     const pathname = usePathname();
     const [isPlusMenuOpen, setIsPlusMenuOpen] = useState(false);
-    const [sideBarView, setSideBarView] = useState<"conversations" | "friends">("conversations");
     const plusMenuRef = useRef<HTMLDivElement>(null);
+    const [searchQuery, setSearchQuery] = useState("");
+    // Combined Conversations List (Groups and Users)
 
-    // Mock data
-    const friends = [
-        { id: 1, name: "Alice", avatar: "https://i.pravatar.cc/150?u=alice", status: "online" },
-        { id: 2, name: "Bob", avatar: "https://i.pravatar.cc/150?u=bob", status: "watching" },
-        { id: 3, name: "Charlie", avatar: "https://i.pravatar.cc/150?u=charlie", status: "offline" },
-        { id: 4, name: "Diana", avatar: "https://i.pravatar.cc/150?u=diana", status: "online" },
-        { id: 5, name: "Eve", avatar: "https://i.pravatar.cc/150?u=eve", status: "online" },
-    ];
-
-    const directMessages = [
-        { id: 1, name: "Alice", avatar: "https://i.pravatar.cc/150?u=alice", status: "online", hasNotification: true },
-        { id: 2, name: "Bob", avatar: "https://i.pravatar.cc/150?u=bob", status: "watching", hasNotification: false },
-        { id: 3, name: "Charlie", avatar: "https://i.pravatar.cc/150?u=charlie", status: "offline", hasNotification: false },
-    ];
-
-    const groups = [
-        { id: 1, name: "Movie Night", icon: Video, hasNotification: true },
-        { id: 2, name: "Coding Crew", icon: Users, hasNotification: false },
+    const conversations = [
+        { id: 'g1', type: 'group', name: "Movie Night", icon: Video, hasNotification: true },
+        { id: 'u1', type: 'dm', name: "Alice", avatar: "https://i.pravatar.cc/150?u=alice", status: "online", hasNotification: true },
+        { id: 'u2', type: 'dm', name: "Bob", avatar: "https://i.pravatar.cc/150?u=bob", status: "watching", hasNotification: false },
+        { id: 'g2', type: 'group', name: "Coding Crew", icon: Users, hasNotification: false },
+        { id: 'u3', type: 'dm', name: "Charlie", avatar: "https://i.pravatar.cc/150?u=charlie", status: "offline", hasNotification: false },
     ];
 
     // Close menu when clicking outside
@@ -154,123 +147,69 @@ export default function Sidebar() {
             {/* 2. THE SOCIAL LIST (Wider Sidebar) */}
             <aside className="w-[240px] h-full bg-[#2b2d31] flex flex-col text-[#949ba4]">
 
-                {/* Header: Friends / Search */}
-                <div className="h-12 border-b border-[#1e1f22] flex items-center px-4 shadow-sm">
-                    <button className="flex-1 flex items-center gap-3 bg-[#1e1f22] px-3 py-1.5 rounded text-sm text-gray-400 hover:text-gray-200 transition-colors">
-                        Find or start a conversation
-                    </button>
+                <div className="h-12 border-b border-[#1e1f22] flex items-center px-2 shadow-sm">
+                    <div className="relative w-full">
+                        <input
+                            type="text"
+                            placeholder="Search for users"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="w-full bg-[#1e1f22] px-3 py-1.5 rounded text-sm text-gray-200 placeholder-gray-500 hover:bg-[#1e1f22] transition-colors outline-none focus:ring-1 focus:ring-blue-500"
+                        />
+                    </div>
                 </div>
 
-                {/* Friends Tab Button */}
-                <div className="px-2 py-4">
-                    <button
-                        onClick={() => setSideBarView(sideBarView === "friends" ? "conversations" : "friends")}
-                        className={cn(
-                            "flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-[#35373c] hover:text-white",
-                            sideBarView === "friends" ? "bg-[#35373c] text-white" : "text-gray-400"
-                        )}
+                {/* Content Area */}
+                <div className="flex-1 overflow-y-auto px-2 space-y-4 no-scrollbar pt-3">
+
+                    {/* Friends Button (Navigates to Friends Page) */}
+                    <Link
+                        href="/friends"
+                        className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-[#35373c] hover:text-white text-gray-400"
                     >
                         <Users size={22} />
-                        <span>Friends</span>
-                    </button>
-                </div>
+                        <span className={cn(pathname === "/friends" && "text-white")}>Friends</span>
+                    </Link>
 
-                {/* Scrollable List */}
-                <div className="flex-1 overflow-y-auto px-2 space-y-4 no-scrollbar">
-
-                    {sideBarView === "conversations" ? (
-                        <>
-                            {/* Direct Messages Section */}
-                            <div>
-                                <div className="flex items-center justify-between px-2 mb-1 group">
-                                    <h3 className="text-[11px] font-bold uppercase tracking-wider text-gray-500 group-hover:text-gray-300 transition-colors">Direct Messages</h3>
-                                    <button className="text-gray-500 hover:text-gray-300">+</button>
-                                </div>
-                                <div className="space-y-0.5">
-                                    {directMessages.map((dm) => (
-                                        <button
-                                            key={dm.id}
-                                            className="flex w-full items-center gap-3 rounded-md px-2 py-1.5 text-sm font-medium hover:bg-[#35373c] hover:text-[#dbdee1] transition-all group relative"
-                                        >
-                                            <div className="relative flex-shrink-0">
-                                                <img src={dm.avatar} alt={dm.name} className="w-8 h-8 rounded-full bg-[#1e1f22]" />
+                    {/* Unified Conversations List */}
+                    <div>
+                        <div className="flex items-center justify-between px-2 mb-1 mt-2 group">
+                            <h3 className="text-[11px] font-bold uppercase tracking-wider text-gray-500 group-hover:text-gray-300 transition-colors">Direct Messages</h3>
+                            <button className="text-gray-500 hover:text-gray-300" title="Create DM">+</button>
+                        </div>
+                        <div className="space-y-0.5">
+                            {conversations.map((item) => (
+                                <Link
+                                    key={item.id}
+                                    href={`/chats/${item.id}`} // Assuming chat routes are /chats/[id]
+                                    className="flex w-full items-center gap-3 rounded-md px-2 py-1.5 text-sm font-medium hover:bg-[#35373c] hover:text-[#dbdee1] transition-all group relative"
+                                >
+                                    <div className="relative flex-shrink-0">
+                                        {item.type === 'dm' ? (
+                                            <>
+                                                <img src={item.avatar} alt={item.name} className="w-8 h-8 rounded-full bg-[#1e1f22]" />
                                                 <span className={cn(
                                                     "absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-[#2b2d31]",
-                                                    dm.status === 'online' ? "bg-green-500" : dm.status === 'watching' ? "bg-[#8a4fff]" : "bg-gray-500"
+                                                    item.status === 'online' ? "bg-green-500" : item.status === 'watching' ? "bg-[#8a4fff]" : "bg-gray-500"
                                                 )}></span>
+                                            </>
+                                        ) : (
+                                            <div className="w-8 h-8 rounded-full bg-[#313338] flex items-center justify-center text-gray-400 group-hover:text-white transition-colors">
+                                                {item.icon && <item.icon size={18} />}
                                             </div>
-                                            <div className="flex-1 text-left overflow-hidden">
-                                                <p className="truncate">{dm.name}</p>
-                                                {dm.status === 'watching' && <p className="text-[10px] text-[#8a4fff] leading-tight">Watching Interstellar</p>}
-                                            </div>
-                                            {dm.hasNotification && (
-                                                <div className="w-2 h-2 rounded-full bg-red-500 shadow-sm" />
-                                            )}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Groups Section */}
-                            <div>
-                                <div className="flex items-center justify-between px-2 mb-1 group">
-                                    <h3 className="text-[11px] font-bold uppercase tracking-wider text-gray-500 group-hover:text-gray-300 transition-colors">Groups</h3>
-                                    <button className="text-gray-500 hover:text-gray-300">+</button>
-                                </div>
-                                <div className="space-y-0.5">
-                                    {groups.map((group) => (
-                                        <button
-                                            key={group.id}
-                                            className="flex w-full items-center gap-3 rounded-md px-2 py-1.5 text-sm font-medium hover:bg-[#35373c] hover:text-[#dbdee1] transition-all group"
-                                        >
-                                            <div className="w-8 h-8 rounded-full bg-[#313338] flex items-center justify-center text-gray-400 group-hover:text-white transition-colors relative">
-                                                <group.icon size={18} />
-                                                {group.hasNotification && (
-                                                    <div className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-red-500 border-2 border-[#2b2d31]" />
-                                                )}
-                                            </div>
-                                            <span className="flex-1 text-left truncate">{group.name}</span>
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-                        </>
-                    ) : (
-                        /* Friends List View */
-                        <div>
-                            <div className="px-2 mb-4">
-                                <h3 className="text-[11px] font-bold uppercase tracking-wider text-gray-500">All Friends — {friends.length}</h3>
-                            </div>
-                            <div className="space-y-0.5">
-                                {friends.map((friend) => (
-                                    <button
-                                        key={friend.id}
-                                        className="flex w-full items-center gap-3 rounded-md px-2 py-2 text-sm font-medium hover:bg-[#35373c] hover:text-[#dbdee1] transition-all group"
-                                    >
-                                        <div className="relative flex-shrink-0">
-                                            <img src={friend.avatar} alt={friend.name} className="w-8 h-8 rounded-full bg-[#1e1f22]" />
-                                            <span className={cn(
-                                                "absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-[#2b2d31]",
-                                                friend.status === 'online' ? "bg-green-500" : friend.status === 'watching' ? "bg-[#8a4fff]" : "bg-gray-500"
-                                            )}></span>
-                                        </div>
-                                        <div className="flex-1 text-left overflow-hidden">
-                                            <p className="truncate text-gray-300 group-hover:text-white">{friend.name}</p>
-                                            <p className="text-[10px] text-gray-500 leading-tight uppercase font-bold">{friend.status}</p>
-                                        </div>
-                                        <div className="hidden group-hover:flex items-center gap-1">
-                                            <div className="p-1.5 bg-[#1e1f22] rounded-full text-gray-400 hover:text-green-500 transition-colors">
-                                                <MessageCircle size={14} />
-                                            </div>
-                                            <div className="p-1.5 bg-[#1e1f22] rounded-full text-gray-400 hover:text-blue-500 transition-colors">
-                                                <MoreHorizontal size={14} />
-                                            </div>
-                                        </div>
-                                    </button>
-                                ))}
-                            </div>
+                                        )}
+                                    </div>
+                                    <div className="flex-1 text-left overflow-hidden">
+                                        <p className="truncate">{item.name}</p>
+                                        {item.status === 'watching' && <p className="text-[10px] text-[#8a4fff] leading-tight">Watching Interstellar</p>}
+                                    </div>
+                                    {item.hasNotification && (
+                                        <div className="w-2 h-2 rounded-full bg-red-500 shadow-sm" />
+                                    )}
+                                </Link>
+                            ))}
                         </div>
-                    )}
+                    </div>
 
                 </div>
             </aside>
