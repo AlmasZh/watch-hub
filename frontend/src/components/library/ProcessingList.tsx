@@ -1,7 +1,6 @@
 "use client";
 
-import { CheckCircle2, FileVideo, LayoutList, Loader2, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { CheckCircle2, FileVideo, Loader2, X } from "lucide-react";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 

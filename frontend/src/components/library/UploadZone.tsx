@@ -1,6 +1,6 @@
 "use client";
 
-import { Download, UploadCloud } from "lucide-react";
+import { UploadCloud } from "lucide-react";
 import { useState, useRef } from "react";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";

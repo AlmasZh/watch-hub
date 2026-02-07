@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { MessageCircle, MoreHorizontal, Check, X, UserPlus, Search } from "lucide-react";
+import { MessageCircle, MoreHorizontal, Check, X } from "lucide-react";
 
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
