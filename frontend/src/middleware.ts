@@ -1,0 +1,37 @@
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+import { jwtVerify, importSPKI } from 'jose';
+import { getJwtPublicKey } from '@/utils/auth-config';
+
+const PUBLIC_ROUTES = ['/login', '/register'];
+
+export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+  const refreshToken = request.cookies.get('refresh_token')?.value;
+  const publicKey = getJwtPublicKey();
+
+  if (pathname === '/' || PUBLIC_ROUTES.some((route) => pathname.startsWith(route))) {
+    return NextResponse.next();
+  }
+
+  if (!refreshToken) {
+    return NextResponse.redirect(new URL('/login', request.url));
+  }
+
+  try {
+    const secret = await importSPKI(publicKey, 'RS256');
+    await jwtVerify(refreshToken, secret);
+
+    return NextResponse.next();
+  } catch (error) {
+    const response = NextResponse.redirect(new URL('/login', request.url));
+    response.cookies.delete('refresh_token');
+    return response;
+  }
+}
+
+export const config = {
+  matcher: [
+    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+  ],
+};

@@ -1,6 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { login } from '@/api/auth/login';
+import { useRouter } from 'next/navigation';
+import { authFetch } from '@/api/fetch-client';
 
 export default function LoginPage() {
     const [identifier, setIdentifier] = useState('');
@@ -8,9 +12,33 @@ export default function LoginPage() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // TODO: Implement authentication logic
-        console.log('Logging in with:', { identifier, password });
+        try {
+            const formData = new URLSearchParams();
+            formData.append('username', identifier);
+            formData.append('password', password);
+            const response = await login(formData);
+        } catch (error) {
+            console.error('Login failed:', error);
+        }
     };
+    const router = useRouter();
+
+    useEffect(
+        () => {
+            const checkAuth = async () => {
+                try {
+                    const res = await authFetch('/auth/verify');
+                    const body = await res.json();
+                    if (body) {
+                        router.push('/');
+                    }
+                } catch (error) {
+                    console.error('Auth check failed:', error);
+                }
+            };
+            checkAuth();
+        }, []
+    )
 
     return (
         <div className="flex min-h-screen items-center justify-center bg-linear-to-br from-violet-600 to-blue-600 px-4 py-12 sm:px-6 lg:px-8">
@@ -84,9 +112,9 @@ export default function LoginPage() {
                 <div className="mt-6 text-left text-sm">
                     <p className="text-gray-400">
                         Need an account?{' '}
-                        <a href="#" className="font-semibold text-[#00A8FC] hover:underline transition-colors">
+                        <Link href="/register" className="font-semibold text-[#00A8FC] hover:underline transition-colors">
                             Register
-                        </a>
+                        </Link>
                     </p>
                 </div>
             </div>

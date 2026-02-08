@@ -1,15 +1,40 @@
 'use client';
 
+import { useEffect } from 'react';
+import Link from 'next/link';
 import { useState } from 'react';
+import { register } from '@/api/auth/register';
+import { RegisterRequest } from "@/types/auth/register";
+import { verifyRegistrationForm } from '@/utils/verifyAuthForm';
+import { useRouter } from 'next/navigation';
+import { authFetch } from '@/api/fetch-client';
 
 export default function RegisterPage() {
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState<RegisterRequest>({
         email: '',
         username: '',
         displayName: '',
         dateOfBirth: '',
         password: '',
     });
+    const router = useRouter();
+
+    useEffect(
+        () => {
+            const checkAuth = async () => {
+                try {
+                    const res = await authFetch('/auth/verify');
+                    const body = await res.json();
+                    if (body) {
+                        router.push('/');
+                    }
+                } catch (error) {
+                    console.error('Auth check failed:', error);
+                }
+            };
+            checkAuth();
+        }, []
+    )
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -23,6 +48,18 @@ export default function RegisterPage() {
         e.preventDefault();
         // TODO: Implement registration logic
         console.log('Registering with:', formData);
+        const errors = verifyRegistrationForm(formData);
+        if (Object.keys(errors).length > 0) {
+            console.log('Errors:', errors);
+            return;
+        }
+        
+        try {
+            const response = await register(formData);
+            console.log('Registration successful:', response);
+        } catch (error) {
+            console.error('Registration failed:', error);
+        }
     };
 
     return (
@@ -139,9 +176,9 @@ export default function RegisterPage() {
                 <div className="mt-6 text-left text-sm">
                     <p className="text-gray-400">
                         Already have an account?{' '}
-                        <a href="/login" className="font-semibold text-[#00A8FC] hover:underline transition-colors">
+                        <Link href="/login" className="font-semibold text-[#00A8FC] hover:underline transition-colors">
                             Log in
-                        </a>
+                        </Link>
                     </p>
                 </div>
             </div>
