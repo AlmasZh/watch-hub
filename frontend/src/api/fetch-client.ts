@@ -59,7 +59,6 @@ export async function authFetch(
     } catch (error) {
       setAccessToken('');
       if (typeof window !== 'undefined') {
-        console.log("redirecting to login");
         window.location.href = `/login?redirect=${encodeURIComponent(window.location.pathname)}`;
       }
       throw error;
