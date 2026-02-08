@@ -4,11 +4,11 @@ from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, or_
 
-from .schemas import UserSignUp
+from .schemas import UserRegister
 from ..users.models import User
 from .utils import get_password_hash, verify_password_hash
 
-async def create_user(user: UserSignUp, db: AsyncSession):
+async def create_user(user: UserRegister, db: AsyncSession):
     user_dict = user.model_dump(exclude={"password"})
     passwd = user.password.get_secret_value()
     hashed_passwd = get_password_hash(passwd=passwd)

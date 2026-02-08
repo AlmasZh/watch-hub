@@ -7,7 +7,7 @@ from src.database import SessionDep
 from src.config import settings
 from .utils import get_current_token_payload, generate_jwt_token
 from .dependencies import get_current_user
-from .schemas import UserSignUp, AccessTokenResponse
+from .schemas import UserRegister, AccessTokenResponse
 from .service import create_user, authenticate_user
 
 router = APIRouter(tags=["auth"])
@@ -38,8 +38,8 @@ async def login(response: Response, user: Annotated[OAuth2PasswordRequestForm, D
     }
 
 
-@router.post("/signup", response_model=AccessTokenResponse, status_code=status.HTTP_201_CREATED)
-async def signup(response: Response, user: UserSignUp, db: SessionDep):
+@router.post("/register", response_model=AccessTokenResponse, status_code=status.HTTP_201_CREATED)
+async def register(response: Response, user: UserRegister, db: SessionDep):
     new_user = await create_user(user=user, db=db)
 
     access_token = generate_jwt_token(new_user.id, settings.JWT_ACCESS_TOKEN_EXPIRATION)

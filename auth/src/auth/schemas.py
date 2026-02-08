@@ -18,7 +18,7 @@ class UserLogin(BaseModel):
     email: EmailStr
     password: str = Field(min_length=8)
 
-class UserSignUp(UserBase):
+class UserRegister(UserBase):
     password: SecretStr = Field(min_length=8, max_length=100, examples=["passwd123"])
 
 class AccessTokenResponse(BaseModel):
