@@ -48,6 +48,13 @@ services:
       - db_password
       - jwt_private
       - jwt_public
+    environment:
+      - USE_SECURE_COOKIES=False
+      - DB_USER=${DB_USER}
+      - DB_NAME=${DB_NAME}
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_SCHEME=postgresql+asyncpg
     # ports:
     #   - "8080:8080"
     healthcheck:
@@ -67,10 +74,15 @@ services:
       context: ../frontend
       dockerfile: Dockerfile.dev
     restart: 'on-failure'
+    entrypoint: ["/usr/local/bin/load_public_key.sh"]
+    command: ["npm", "run", "dev"]
     # ports:
     #   - "3000:3000"
     volumes:
       - "../frontend:/app"
+      - "./scripts/load_public_key.sh:/usr/local/bin/load_public_key.sh"
+    secrets:
+      - jwt_public
     networks:
       - wt-internal
 
