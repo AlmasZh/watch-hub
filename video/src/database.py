@@ -4,6 +4,7 @@ from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession, create_asyn
 
 from .config import settings
 from .models import Base
+from .video.models import Media, UserVideo, Movie, Genre
 
 engine = create_async_engine(settings.db_url, echo=True)
 new_session = async_sessionmaker(engine, expire_on_commit=False)
