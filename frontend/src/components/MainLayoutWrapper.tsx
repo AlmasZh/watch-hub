@@ -1,6 +1,6 @@
 "use client";
 
-import { useSidebar } from "@/context/SidebarContext";
+import { usePathname } from "next/navigation";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -13,17 +13,19 @@ export default function MainLayoutWrapper({
 }: {
     children: React.ReactNode;
 }) {
-    // The sidebar is now a fixed dual-column layout.
-    // Rail (72px) + Social List (240px) = 312px
+    const pathname = usePathname();
+    const isFullWidthPage = pathname.startsWith("/chats") || pathname.startsWith("/watch");
 
     return (
         <main
             className={cn(
                 "transition-all duration-300 ease-in-out min-h-screen",
-                "ml-[312px]" // Fixed combined width of Rail and Social List
+                "ml-[72px]" // Fixed width of Sidebar
             )}
         >
-            <div className="max-w-7xl mx-auto py-6">
+            <div className={cn(
+                isFullWidthPage ? "h-screen" : "max-w-7xl mx-auto py-6"
+            )}>
                 {children}
             </div>
         </main>
