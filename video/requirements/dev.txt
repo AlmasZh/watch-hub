@@ -1,0 +1,7 @@
+aioboto3
+fastapi
+uvicorn[standard]
+python-multipart
+asyncpg
+sqlalchemy
+pydantic-settings

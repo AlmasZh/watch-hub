@@ -16,7 +16,6 @@ services:
       web:
         condition: service_started
 
-
   db:
     image: postgres
     restart: 'unless-stopped'
@@ -37,6 +36,7 @@ services:
       - ./scripts/init_sql.sh:/docker-entrypoint-initdb.d/init-user-db.sh
     networks:
       - wt-internal
+
   auth:
     build:
       context: ../auth/
@@ -51,7 +51,7 @@ services:
     environment:
       - USE_SECURE_COOKIES=False
       - DB_USER=${DB_USER}
-      - DB_NAME=${DB_NAME}
+      - DB_NAME=auth
       - DB_HOST=db
       - DB_PORT=5432
       - DB_SCHEME=postgresql+asyncpg
@@ -69,6 +69,30 @@ services:
       db:
         condition: service_healthy
         restart: true
+
+  video:
+    build:
+      context: ../video
+      dockerfile: Dockerfile.dev
+    # ports:
+    #   - "8081:8081"
+    environment:
+      - DB_USER=${DB_USER}
+      - DB_NAME=video
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_SCHEME=postgresql+asyncpg
+    volumes:
+      - "../video:/app"
+    secrets:
+      - jwt_public
+      - db_password
+    networks:
+      - wt-internal
+    depends_on:
+      auth:
+        condition: service_healthy
+
   web:
     build:
       context: ../frontend
@@ -92,6 +116,8 @@ services:
       - "127.0.0.1:4566:4566"
       - "127.0.0.1:4510-4559:4510-4559"
     environment:
+      - EXTRA_CORS_ALLOWED_ORIGINS=*
+      - EXTRA_CORS_ALLOWED_HEADERS=*
       - LOCALSTACK_AUTH_TOKEN=${LOCALSTACK_AUTH_TOKEN}
       - DEBUG=1
       - DOCKER_HOST=unix:///var/run/docker.sock
