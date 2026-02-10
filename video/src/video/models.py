@@ -15,7 +15,7 @@ class MediaStatus(str, Enum):
     READY = "ready"       # Ready to stream
     FAILED = "failed"
 
-class VideoPrivacy(str, Enum): # This is unnecessary curently, but may be needed in the future 
+class VideoPrivacy(str, Enum): # This is unnecessary currently, but may be needed in the future 
     PUBLIC = "public"
     PRIVATE = "private"
     UNLISTED = "unlisted"
