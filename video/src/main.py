@@ -1,8 +1,9 @@
-from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from contextlib import asynccontextmanager
 
 from .database import setup_db
+from .config import settings
 
 
 origins = [
@@ -11,6 +12,7 @@ origins = [
     "http://wt.com",
     "https://wt.com",
 ]
+prefix = settings.api_prefix
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -27,6 +29,6 @@ app.add_middleware(
     allow_headers="*",
 )
 
-@app.get("/")
+@app.get(f'{prefix}/health')
 async def health_check():
     return {"message": "ok"}
