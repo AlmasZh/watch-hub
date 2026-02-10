@@ -2,7 +2,7 @@ import uuid
 from enum import Enum
 from datetime import datetime
 
-from sqlalchemy import ForeignKey, String, Integer, Text, DateTime, func, Table, Column
+from sqlalchemy import ForeignKey, String, Integer, Float, Text, DateTime, func, Table, Column
 from sqlalchemy.orm import mapped_column, Mapped, relationship
 from sqlalchemy.dialects.postgresql import UUID
 
@@ -83,7 +83,7 @@ class Movie(Media):
     # Specific fields for Movies
     release_year: Mapped[int] = mapped_column(Integer)
     director: Mapped[str | None] = mapped_column(String(100))
-    rating: Mapped[float | None] = mapped_column(Integer) # e.g. IMDB rating 1-10
+    rating: Mapped[float | None] = mapped_column(Float) # e.g. IMDB rating 1-10
     
     # Relationships
     genres: Mapped[list["Genre"]] = relationship(

@@ -1,5 +1,5 @@
 from typing import Literal
-from pydantic import PostgresDsn, SecretStr
+from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
@@ -9,7 +9,7 @@ class Settings(BaseSettings):
         extra="ignore"
     )
 
-    db_scheme: str = "postgres+asyncpg"
+    db_scheme: str = "postgresql+asyncpg"
     db_host: str = "db"
     db_port: int = 5432
     db_user: str = "user"
@@ -26,6 +26,6 @@ class Settings(BaseSettings):
 
     @property
     def db_url(self) -> str:
-        return f'{self.db_scheme}://{self.db_user}:{self.db_password.get_secret_value()}@{self.db_host}/{self.db_name}'
+        return f'{self.db_scheme}://{self.db_user}:{self.db_password.get_secret_value()}@{self.db_host}:{self.db_port}/{self.db_name}'
 
 settings = Settings()
