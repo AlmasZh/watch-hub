@@ -84,6 +84,7 @@ class Movie(Media):
     release_year: Mapped[int] = mapped_column(Integer)
     director: Mapped[str | None] = mapped_column(String(100))
     rating: Mapped[float | None] = mapped_column(Float) # e.g. IMDB rating 1-10
+    poster_url: Mapped[str | None] = mapped_column(String(512))
     
     # Relationships
     genres: Mapped[list["Genre"]] = relationship(
