@@ -16,7 +16,7 @@ prefix = settings.api_prefix
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    await setup_db()
+    # await setup_db()
     yield
 
 app = FastAPI(lifespan=lifespan)
