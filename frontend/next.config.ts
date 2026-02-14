@@ -13,6 +13,16 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async rewrites() {
+    return [
+      {
+        // This is your local 'fake' path
+        source: "/video-proxy/:path*",
+        // This is the real CloudFront destination
+        destination: "https://d24lanzu8wxnoe.cloudfront.net/:path*",
+      },
+    ];
+  },
 };
 
 export default nextConfig;
