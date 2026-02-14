@@ -47,19 +47,22 @@ export async function authFetch(
     try {
       const newToken = await refreshPromise;
       setAccessToken(newToken);
-      
+
       headers.set('Authorization', `Bearer ${newToken}`);
-      
-      const retryConfig: RequestInit = { 
-        ...config, 
-        headers 
+
+      const retryConfig: RequestInit = {
+        ...config,
+        headers
       };
-      
+
       response = await fetch(input, retryConfig);
     } catch (error) {
       setAccessToken('');
       if (typeof window !== 'undefined') {
-        window.location.href = `/login?redirect=${encodeURIComponent(window.location.pathname)}`;
+        const currentPath = window.location.pathname;
+        if (!currentPath.startsWith('/login') && !currentPath.startsWith('/register')) {
+          window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`;
+        }
       }
       throw error;
     } finally {
@@ -73,7 +76,7 @@ export async function authFetch(
 async function refreshAccessToken(): Promise<string> {
   const res = await fetch(`${env.API_URL}/auth/refresh-token`, {
     method: 'POST',
-    credentials: 'include', 
+    credentials: 'include',
   });
 
   if (!res.ok) {
