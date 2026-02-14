@@ -13,6 +13,14 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async rewrites() {
+    return [
+      {
+        source: "/video-proxy/:path*",
+        destination: process.env.NEXT_PUBLIC_CLOUDFRONT_URL!,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

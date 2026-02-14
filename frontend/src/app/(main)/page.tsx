@@ -11,7 +11,7 @@ const HERO_DATA = {
   title: "Inception",
   description:
     "A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a C.E.O.",
-  backgroundImage: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=2525&auto=format&fit=crop", // Movie theater/cinematic feel
+  backgroundImage: "/main_poster.webp",
   rating: "PG-13",
   year: "2010",
   duration: "2h 28m",

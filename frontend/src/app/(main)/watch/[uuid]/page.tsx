@@ -65,9 +65,10 @@ export default function WatchPage() {
                     {/* The Player - Large & Cinematic */}
                     <div className="w-full">
                         <VideoPlayer
-                            src={currentVideo.src}
+                            // src="https://d24lanzu8wxnoe.cloudfront.net/inception/inception.m3u8"
+                            src="/video-proxy/inception/inception.m3u8"
                             poster={currentVideo.poster} // Use the backdrop/thumbnail for the player, or poster if preferred
-                            title={currentVideo.title}
+                            title="Inception"
                         />
                     </div>
 
