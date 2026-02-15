@@ -35,6 +35,8 @@ class Media(Base):
     )
     title: Mapped[str] = mapped_column(String(255), index=True)
     description: Mapped[str | None] = mapped_column(Text)
+    original_file_name: Mapped[str] = mapped_column(String(255))
+    storage_key: Mapped[str] = mapped_column(String(512))
     stream_url: Mapped[str] = mapped_column(String(512))
     thumbnail_url: Mapped[str | None] = mapped_column(String(512))
     duration_seconds: Mapped[int] = mapped_column(Integer, default=0)
