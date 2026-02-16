@@ -24,3 +24,12 @@ export async function getMovies(): Promise<Movie[]> {
 
     return response.json();
 }
+export async function getMovieByUuid(uuid: string): Promise<Movie> {
+    const response = await authFetch(`/video/movie/${uuid}`, { skipAuth: true });
+
+    if (!response.ok) {
+        throw new Error('Movie not found');
+    }
+
+    return response.json();
+}
