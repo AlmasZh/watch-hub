@@ -112,7 +112,6 @@ def upgrade() -> None:
     # We iterate manually because we need to share the generated UUID between the two tables
     for movie in movie_data:
         media_id = uuid.uuid4()
-        now = datetime.now(timezone.utc).replace(tzinfo=None) # Make naive for sa.DateTime without timezone=True
 
         # Insert Parent (Media)
         op.execute(
@@ -127,8 +126,6 @@ def upgrade() -> None:
                 duration_seconds=movie["duration_seconds"],
                 status="ready",  # MediaStatus.READY
                 type="movie",    # polymorphic_identity
-                created_at=now,
-                updated_at=now
             )
         )
 
