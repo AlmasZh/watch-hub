@@ -1,6 +1,7 @@
 from pydantic import BaseModel, ConfigDict, HttpUrl
 from pydantic.alias_generators import to_camel
 from uuid import UUID
+from typing import Literal
 
 
 class MovieResponse(BaseModel):
@@ -24,5 +25,5 @@ class MovieResponse(BaseModel):
     director: str | None = None
     rating: float | None = None
     
-    status: str
+    status: Literal["pending", "processing", "ready", "failed"]
     type: str
