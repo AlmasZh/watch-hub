@@ -4,6 +4,7 @@ from contextlib import asynccontextmanager
 
 from .database import setup_db
 from .config import settings
+from .video.router import router as video_router
 
 
 origins = [
@@ -19,7 +20,7 @@ async def lifespan(app: FastAPI):
     # await setup_db()
     yield
 
-app = FastAPI(lifespan=lifespan)
+app = FastAPI(lifespan=lifespan, docs_url=f'{prefix}/docs', openapi_url=f'{prefix}/openapi.json')
 
 app.add_middleware(
     CORSMiddleware,
@@ -28,6 +29,8 @@ app.add_middleware(
     allow_methods="*",
     allow_headers="*",
 )
+
+app.include_router(video_router, prefix=f"{prefix}/video")
 
 @app.get(f'{prefix}/health')
 async def health_check():
