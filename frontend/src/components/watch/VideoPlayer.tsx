@@ -69,6 +69,10 @@ function PlayerControls() {
     const autoQuality = useMediaState("autoQuality");
     const remote = useMediaRemote();
 
+    const sortedQualities = [...qualities]
+        .map((item, index) => ({ ...item, originalIndex: index }))
+        .sort((a, b) => b.height - a.height);
+
     return (
         <div
             className="absolute inset-0 z-0 bg-transparent"
@@ -91,6 +95,8 @@ function PlayerControls() {
                     className="flex flex-col gap-2 w-full pointer-events-auto"
                     onClick={(e) => e.stopPropagation()}
                     onPointerUp={(e) => e.stopPropagation()}
+
+                    onPointerDown={(e) => e.stopPropagation()}
                 >
 
                     {/* Time Slider */}
@@ -132,55 +138,66 @@ function PlayerControls() {
 
                         {/* Right Side: Quality, Fullscreen */}
                         <div className="flex items-center gap-4">
-
                             {/* --- 3. QUALITY MENU --- */}
                             {qualities.length > 0 && (
                                 <Menu.Root>
-                                    <Menu.Button className="group ring-inset ring-blue-500 hover:text-blue-400 outline-none">
+                                    <Menu.Button className="group ring-inset ring-blue-500 hover:text-blue-400 outline-none"
+                                        onPointerDown={(e) => e.stopPropagation()} // Stop it right at the source
+                                        onClick={(e) => e.stopPropagation()}
+                                    >
                                         <Settings className="h-6 w-6 transform transition-transform group-data-[open]:rotate-90" />
                                     </Menu.Button>
+                                    
                                     <Menu.Content
-                                        className="animate-out fade-out data-[open]:animate-in data-[open]:fade-in data-[open]:slide-in-from-bottom-2 absolute bottom-12 right-0 z-50 flex max-h-[300px] min-w-[160px] flex-col overflow-y-auto overflow-x-hidden rounded-md border border-white/10 bg-black/95 p-2 font-sans text-[13px] font-medium text-white backdrop-blur-sm shadow-xl"
+                                        // className="animate-out fade-out data-[open]:animate-in data-[open]:fade-in data-[open]:slide-in-from-bottom-2 absolute bottom-12 right-0 z-50 flex max-h-[300px] min-w-[160px] flex-col overflow-y-auto overflow-x-hidden rounded-md border border-white/10 bg-black/95 p-2 font-sans text-[13px] font-medium text-white backdrop-blur-sm shadow-xl"
+                                        className="animate-in fade-in slide-in-from-bottom-2 absolute bottom-12 right-0 z-50 flex h-[auto] max-h-[80vh] min-w-[200px] min-h-[200px] flex-col overflow-y-auto overflow-x-hidden rounded-md border border-white/10 bg-black/95 p-2 font-sans text-[13px] font-medium text-white backdrop-blur-sm shadow-xl"
+
                                         placement="top end"
                                     >
                                         <span className="px-2 py-1.5 text-xs text-white/50 font-semibold uppercase tracking-wider">
                                             Quality
                                         </span>
-                                        <Menu.RadioGroup value={autoQuality ? "auto" : currentQuality?.id}>
+                                        
+                                        <Menu.RadioGroup value={autoQuality ? "auto" : qualities.findIndex(q => q === currentQuality).toString()}>
                                             {/* "Auto" Option */}
                                             <Menu.Radio
                                                 className="group relative flex w-full cursor-pointer select-none items-center justify-start rounded-sm p-2 text-sm outline-none hover:bg-white/10 data-[focus]:bg-white/10"
                                                 value="auto"
+                                                key="quality-auto"
                                                 onSelect={() => remote.requestAutoQuality()}
                                             >
                                                 <Check className="mr-2 h-4 w-4 opacity-0 group-data-[checked]:opacity-100 text-blue-500" />
                                                 <span className="flex-1">Auto</span>
+                                                {autoQuality && currentQuality && (
+                                                    <span className="text-xs text-white/50 ml-2">({currentQuality.height}p)</span>
+                                                )}
                                             </Menu.Radio>
 
-                                            {/* Iterate over HLS qualities (1080p, 720p, etc) */}
-                                            {qualities.map((quality, i) => (
+                                            {/* Video Qualities (Sorted High to Low) */}
+                                            {sortedQualities.map((quality) => {
+                                                const uniqueValue = quality.originalIndex.toString();
+                                                return (
                                                 <Menu.Radio
-                                                    key={`${quality.id}-${i}`}
+                                                    key={`q-${quality.originalIndex}`}
                                                     className="group relative flex w-full cursor-pointer select-none items-center justify-start rounded-sm p-2 text-sm outline-none hover:bg-white/10 data-[focus]:bg-white/10"
-                                                    value={quality.id}
-                                                    onSelect={() => remote.changeQuality(i)}
+                                                    value={uniqueValue}
+                                                    onSelect={() => remote.changeQuality(quality.originalIndex)}
                                                 >
                                                     <Check className="mr-2 h-4 w-4 opacity-0 group-data-[checked]:opacity-100 text-blue-500" />
                                                     <span className="flex-1">
                                                         {quality.height}p
                                                     </span>
-                                                    {quality.bitrate && (
+                                                    {quality.bitrate && quality.bitrate > 0 && (
                                                         <span className="text-xs text-white/50 ml-2">
                                                             {(quality.bitrate / 1000000).toFixed(1)} Mbps
                                                         </span>
                                                     )}
                                                 </Menu.Radio>
-                                            ))}
+                                            )})}
                                         </Menu.RadioGroup>
                                     </Menu.Content>
                                 </Menu.Root>
                             )}
-
                             <FullscreenButton className="group ring-inset ring-blue-500 hover:text-blue-400 outline-none">
                                 <Maximize className="h-6 w-6 group-data-[fullscreen]:hidden" />
                                 <Minimize className="hidden h-6 w-6 group-data-[fullscreen]:block" />
