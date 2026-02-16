@@ -11,6 +11,11 @@ const nextConfig: NextConfig = {
         hostname: "images.unsplash.com",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: process.env.NEXT_PUBLIC_IMAGES_CLOUDFRONT_URL!,
+        pathname: "/**",
+      },
     ],
   },
   async rewrites() {
