@@ -30,7 +30,7 @@ app.add_middleware(
     allow_headers="*",
 )
 
-app.include_router(video_router, prefix=f"{prefix}/video")
+app.include_router(video_router, prefix=prefix)
 
 @app.get(f'{prefix}/health')
 async def health_check():
