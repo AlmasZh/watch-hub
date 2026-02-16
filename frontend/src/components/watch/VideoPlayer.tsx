@@ -149,8 +149,7 @@ function PlayerControls() {
                                     </Menu.Button>
                                     
                                     <Menu.Content
-                                        // className="animate-out fade-out data-[open]:animate-in data-[open]:fade-in data-[open]:slide-in-from-bottom-2 absolute bottom-12 right-0 z-50 flex max-h-[300px] min-w-[160px] flex-col overflow-y-auto overflow-x-hidden rounded-md border border-white/10 bg-black/95 p-2 font-sans text-[13px] font-medium text-white backdrop-blur-sm shadow-xl"
-                                        className="animate-in fade-in slide-in-from-bottom-2 absolute bottom-12 right-0 z-50 flex h-[auto] max-h-[80vh] min-w-[200px] min-h-[200px] flex-col overflow-y-auto overflow-x-hidden rounded-md border border-white/10 bg-black/95 p-2 font-sans text-[13px] font-medium text-white backdrop-blur-sm shadow-xl"
+                                        className="animate-in fade-in slide-in-from-bottom-2 absolute bottom-12 right-0 z-50 flex h-[auto] max-h-[16vh] min-w-[200px] min-h-[200px] flex-col overflow-y-auto overflow-x-hidden rounded-md border border-white/10 bg-black/95 p-2 font-sans text-[13px] font-medium text-white backdrop-blur-sm shadow-xl"
 
                                         placement="top end"
                                     >
