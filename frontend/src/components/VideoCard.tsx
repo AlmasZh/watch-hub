@@ -7,6 +7,7 @@ interface VideoCardProps {
     thumbnail: string;
     duration: string;
     views: string;
+    onClick?: () => void;
     onWatchAlone?: () => void;
     onCreateParty?: () => void;
 }
@@ -17,11 +18,15 @@ export default function VideoCard({
     thumbnail,
     duration,
     views,
+    onClick,
     onWatchAlone,
     onCreateParty
 }: VideoCardProps) {
     return (
-        <div className="group relative w-full h-[320px] rounded-xl overflow-hidden bg-[#1e1f22] border border-[#2b2d31] hover:border-blue-500/50 hover:shadow-xl transition-all duration-300">
+        <div
+            onClick={onClick}
+            className="group relative w-full h-[320px] rounded-xl overflow-hidden bg-[#1e1f22] border border-[#2b2d31] hover:border-blue-500/50 hover:shadow-xl transition-all duration-300 cursor-pointer"
+        >
 
             {/* Thumbnail */}
             <div className="relative h-48 w-full overflow-hidden">
@@ -60,13 +65,19 @@ export default function VideoCard({
                 {/* Hover Actions (Slide Up) */}
                 <div className="absolute bottom-0 left-0 right-0 bg-[#2b2d31] p-3 translate-y-full group-hover:translate-y-0 transition-transform duration-300 flex gap-2">
                     <button
-                        onClick={onWatchAlone}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            onWatchAlone?.();
+                        }}
                         className="flex-1 flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-2 rounded transition-colors"
                     >
                         <Play size={14} className="fill-current" /> Watch Alone
                     </button>
                     <button
-                        onClick={onCreateParty}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            onCreateParty?.();
+                        }}
                         className="flex-1 flex items-center justify-center gap-2 bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold py-2 rounded transition-colors"
                     >
                         <Users size={14} /> Party

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import HeroSection from "@/components/HeroSection";
 import CategoryFilter from "@/components/CategoryFilter";
 import VideoCard from "@/components/VideoCard";
@@ -40,6 +41,7 @@ function formatDuration(seconds: number): string {
 }
 
 export default function Home() {
+  const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(true);
@@ -71,12 +73,16 @@ export default function Home() {
   //     : movies.filter((movie) => movie.genres.includes(selectedCategory));
   const filteredVideos = movies;
 
-  const handleWatchAlone = (title: string) => {
-    console.log(`Watching ${title} alone`);
+  const handleWatchAlone = (id: string) => {
+    router.push(`/watch/${id}`);
   };
 
   const handleCreateParty = (title: string) => {
     console.log(`Creating party for ${title}`);
+  };
+
+  const handleVideoClick = (id: string) => {
+    router.push(`/watch/${id}`);
   };
 
   return (
@@ -128,7 +134,8 @@ export default function Home() {
                 thumbnail={movie.thumbnailUrl}
                 duration={formatDuration(movie.durationSeconds)}
                 views={`${movie.rating}/10`}
-                onWatchAlone={() => handleWatchAlone(movie.title)}
+                onClick={() => handleVideoClick(movie.id)}
+                onWatchAlone={() => handleWatchAlone(movie.id)}
                 onCreateParty={() => handleCreateParty(movie.title)}
               />
             ))}
