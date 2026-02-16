@@ -1,12 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import HeroSection from "@/components/HeroSection";
 import CategoryFilter from "@/components/CategoryFilter";
 import VideoCard from "@/components/VideoCard";
-import { Play } from "lucide-react";
+import { Play, Loader2 } from "lucide-react";
+import { getMovies, Movie } from "@/api/video/movies";
 
-// Mock Data
 const HERO_DATA = {
   title: "Inception",
   description:
@@ -30,89 +30,53 @@ const CATEGORIES = [
   "Thriller",
 ];
 
-const VIDEOS = [
-  {
-    id: "1",
-    title: "Interstellar",
-    thumbnail: "https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?q=80&w=2613&auto=format&fit=crop", // Space
-    duration: "2h 49m",
-    views: "1.2M",
-    category: "Sci-Fi",
-  },
-  {
-    id: "2",
-    title: "The Dark Knight",
-    thumbnail: "https://images.unsplash.com/photo-1478720568477-152d9b164e63?q=80&w=2508&auto=format&fit=crop", // Dark city
-    duration: "2h 32m",
-    views: "980K",
-    category: "Action",
-  },
-  {
-    id: "3",
-    title: "Avengers: Endgame",
-    thumbnail: "https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?q=80&w=2670&auto=format&fit=crop", // Action feel
-    duration: "3h 2m",
-    views: "2.5M",
-    category: "Action",
-  },
-  {
-    id: "4",
-    title: "Spirited Away",
-    thumbnail: "https://images.unsplash.com/photo-1614947932609-84728512cd6a?q=80&w=2670&auto=format&fit=crop", // Fantasy
-    duration: "2h 5m",
-    views: "850K",
-    category: "Anime",
-  },
-  {
-    id: "5",
-    title: "Parasite",
-    thumbnail: "https://images.unsplash.com/photo-1594909122845-11baa439b7bf?q=80&w=2670&auto=format&fit=crop", // Drama/Thriller
-    duration: "2h 12m",
-    views: "1.1M",
-    category: "Drama",
-  },
-  {
-    id: "6",
-    title: "The Godfather",
-    thumbnail: "https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=2659&auto=format&fit=crop", // Classic film
-    duration: "2h 55m",
-    views: "720K",
-    category: "Drama",
-  },
-  {
-    id: "7",
-    title: "Dune: Part Two",
-    thumbnail: "https://images.unsplash.com/photo-1541963463532-d68292c34b19?q=80&w=2576&auto=format&fit=crop", // Desert/SciFi
-    duration: "2h 46m",
-    views: "3.2M",
-    category: "Sci-Fi"
-  },
-  {
-    id: "8",
-    title: "Barbie",
-    thumbnail: "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?q=80&w=2669&auto=format&fit=crop", // Pink/Bright
-    duration: "1h 54m",
-    views: "4.1M",
-    category: "Comedy"
+function formatDuration(seconds: number): string {
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  if (hours > 0) {
+    return `${hours}h ${minutes}m`;
   }
-];
+  return `${minutes}m`;
+}
 
 export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [movies, setMovies] = useState<Movie[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const filteredVideos =
-    selectedCategory === "All"
-      ? VIDEOS
-      : VIDEOS.filter((video) => video.category === selectedCategory);
+  useEffect(() => {
+    async function fetchMovies() {
+      try {
+        setLoading(true);
+        const data = await getMovies();
+        console.log(data);
+        setMovies(data);
+        setError(null);
+      } catch (err) {
+        console.error("Failed to fetch movies:", err);
+        setError("Failed to load movies. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchMovies();
+  }, []);
+
+  // TODO: Enable filtering once genres are added to the API
+  // const filteredVideos =
+  //   selectedCategory === "All"
+  //     ? movies
+  //     : movies.filter((movie) => movie.genres.includes(selectedCategory));
+  const filteredVideos = movies;
 
   const handleWatchAlone = (title: string) => {
     console.log(`Watching ${title} alone`);
-    // Logic to navigate to watch page
   };
 
   const handleCreateParty = (title: string) => {
     console.log(`Creating party for ${title}`);
-    // Logic to open modal
   };
 
   return (
@@ -139,18 +103,33 @@ export default function Home() {
           {selectedCategory === "All" ? "Trending Now" : `${selectedCategory} Movies`}
         </h2>
 
-        {filteredVideos.length > 0 ? (
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-20 text-gray-400">
+            <Loader2 className="w-8 h-8 animate-spin mb-4" />
+            <p className="text-lg">Loading movies...</p>
+          </div>
+        ) : error ? (
+          <div className="flex flex-col items-center justify-center py-20 text-red-400">
+            <p className="text-lg">{error}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="mt-4 text-blue-400 hover:underline"
+            >
+              Retry
+            </button>
+          </div>
+        ) : filteredVideos.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-            {filteredVideos.map((video) => (
+            {filteredVideos.map((movie) => (
               <VideoCard
-                key={video.id}
-                id={video.id}
-                title={video.title}
-                thumbnail={video.thumbnail}
-                duration={video.duration}
-                views={video.views}
-                onWatchAlone={() => handleWatchAlone(video.title)}
-                onCreateParty={() => handleCreateParty(video.title)}
+                key={movie.id}
+                id={movie.id}
+                title={movie.title}
+                thumbnail={movie.thumbnailUrl}
+                duration={formatDuration(movie.durationSeconds)}
+                views={`${movie.rating}/10`}
+                onWatchAlone={() => handleWatchAlone(movie.title)}
+                onCreateParty={() => handleCreateParty(movie.title)}
               />
             ))}
           </div>
