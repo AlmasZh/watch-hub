@@ -17,6 +17,7 @@ export default function LoginPage() {
             formData.append('username', identifier);
             formData.append('password', password);
             const response = await login(formData);
+            router.push('/');
         } catch (error) {
             console.error('Login failed:', error);
         }
