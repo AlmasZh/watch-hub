@@ -56,7 +56,7 @@ export default function RegisterPage() {
         
         try {
             const response = await register(formData);
-            console.log('Registration successful:', response);
+            router.push('/');
         } catch (error) {
             console.error('Registration failed:', error);
         }

@@ -1,28 +1,12 @@
 "use client";
 
 import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import VideoPlayer from "../../../../components/watch/VideoPlayer";
 import VideoInfo from "../../../../components/watch/VideoInfo";
 import CommentsSection from "../../../../components/watch/CommentsSection";
-
-// Mock Data
-const VIDEO_DETAILS = {
-    title: "Stranger Things",
-    src: "https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4", // Using a sample video for now
-    poster: "https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?q=80&w=2670&auto=format&fit=crop", // Using a poster-like image
-    views: "1.5M", // Keeping this for internal use or other displays
-    year: "2016",
-    country: "USA",
-    genres: ["Sci-Fi", "Horror", "Drama"],
-    duration: "1h 6m",
-    premiere: "2016-07-12",
-    quality: "BluRay 4K",
-    audioLanguages: ["English", "Russian (Dub)", "French", "German", "Spanish"],
-    ratingImdb: "8.7",
-    uploadDate: "2 weeks ago",
-    description: "When a young boy disappears, his mother, a police chief and his friends must confront terrifying supernatural forces in order to get him back. Set in the 1980s in the fictional town of Hawkins, Indiana, the first season focuses on the investigation into the disappearance of a young boy.",
-    likeCount: "45K",
-};
+import { getMovieByUuid, Movie } from "@/api/video/movies";
+import { Loader2 } from "lucide-react";
 
 const COMMENTS = [
     {
@@ -51,47 +35,95 @@ const COMMENTS = [
     },
 ];
 
+function formatDuration(seconds: number): string {
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    if (h > 0) return `${h}h ${m}m`;
+    return `${m}m`;
+}
+
 export default function WatchPage() {
     const { uuid } = useParams();
+    const [movie, setMovie] = useState<Movie | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
-    // In a real app, fetch video details by UUID
-    const currentVideo = { ...VIDEO_DETAILS, id: uuid };
+    useEffect(() => {
+        if (!uuid) return;
+
+        const fetchMovie = async () => {
+            try {
+                setIsLoading(true);
+                const data = await getMovieByUuid(uuid as string);
+                setMovie(data);
+                setError(null);
+            } catch (err) {
+                console.error("Failed to fetch movie:", err);
+                setError("Failed to load movie. Please try again later.");
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchMovie();
+    }, [uuid]);
+
+    if (isLoading) {
+        return (
+            <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
+                <Loader2 className="w-10 h-10 text-blue-500 animate-spin" />
+            </div>
+        );
+    }
+
+    if (error || !movie) {
+        return (
+            <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center text-white">
+                <div className="text-center">
+                    <p className="text-xl mb-4">{error || "Movie not found"}</p>
+                    <button
+                        onClick={() => window.location.reload()}
+                        className="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-lg transition-colors"
+                    >
+                        Try Again
+                    </button>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-[#0a0a0a] text-white">
             <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
-
                 <div className="flex flex-col gap-8">
                     {/* The Player - Large & Cinematic */}
                     <div className="w-full">
                         <VideoPlayer
-                            // src="https://d24lanzu8wxnoe.cloudfront.net/inception/inception.m3u8"
-                            src="/video-proxy/inception/inception.m3u8"
-                            poster={currentVideo.poster} // Use the backdrop/thumbnail for the player, or poster if preferred
-                            title="Inception"
+                            src={movie.streamUrl}
+                            poster={movie.thumbnailUrl}
+                            title={movie.title}
                         />
                     </div>
 
                     {/* Info & Comments - Centered & Focused */}
                     <div className="max-w-5xl mx-auto w-full">
                         <VideoInfo
-                            title={currentVideo.title}
-                            description={currentVideo.description}
-                            poster={currentVideo.poster}
-                            year={currentVideo.year}
-                            country={currentVideo.country}
-                            genres={currentVideo.genres}
-                            duration={currentVideo.duration}
-                            premiere={currentVideo.premiere}
-                            quality={currentVideo.quality}
-                            audioLanguages={currentVideo.audioLanguages}
-                            ratingImdb={currentVideo.ratingImdb}
+                            title={movie.title}
+                            description={movie.description}
+                            poster={movie.posterUrl}
+                            year={movie.releaseYear.toString()}
+                            country="N/A" // Missing from API
+                            genres={[]} // Missing from API
+                            duration={formatDuration(movie.durationSeconds)}
+                            premiere={movie.releaseYear.toString()} // Missing exact date
+                            quality="HD" // Default
+                            audioLanguages={["English"]} // Default
+                            ratingImdb={movie.rating.toString()}
                         />
                         <div className="mt-12">
                             <CommentsSection comments={COMMENTS} />
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
