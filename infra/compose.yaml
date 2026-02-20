@@ -55,6 +55,7 @@ services:
       - DB_HOST=db
       - DB_PORT=5432
       - DB_SCHEME=postgresql+asyncpg
+      - GRPC_ADDR=0.0.0.0:50051
     # ports:
     #   - "8080:8080"
     healthcheck:
