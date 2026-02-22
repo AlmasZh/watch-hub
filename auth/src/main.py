@@ -6,6 +6,8 @@ from .database import setup_database
 from .auth.router import router as auth_router
 from .users.router import router as users_router
 from .config import settings
+from .auth.grpc_server import start_grpc_server
+
 
 origins = [
     "http://localhost:3000",
@@ -18,7 +20,9 @@ prefix = settings.API_PREFIX
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await setup_database()
+    grpc_server = await start_grpc_server()
     yield
+    await grpc_server.stop(grace=5)
 
 app = FastAPI(lifespan=lifespan, docs_url=f'{prefix}/docs', openapi_url=f'{prefix}/openapi.json')
 
