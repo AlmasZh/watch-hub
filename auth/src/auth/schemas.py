@@ -9,7 +9,7 @@ from .utils import username_validator
 class UserBase(BaseModel):
     model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
 
-    email: EmailStr
+    email: EmailStr = Field(examples=["almas@gmail.com"])
     username: Annotated[str, Field(min_length=2, max_length=50, examples=["almas"]), AfterValidator(username_validator)]
     display_name: str = Field(min_length=2, max_length=50, default=None)
     date_of_birth: PastDate = Field(examples=["2012-12-12"])
