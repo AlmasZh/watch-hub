@@ -19,12 +19,9 @@ class AuthService(auth_pb2_grpc.AuthServiceServicer):
 
     async def GetUserById(self, request, context: grpc.aio.ServicerContext) -> auth_pb2.UserResponse:
         async with new_session() as session:
-            try:
-                user_id = int(request.user_id)
-            except ValueError:
-                await context.abort(grpc.StatusCode.INVALID_ARGUMENT, details="user_id must be an integer")
-            user = await self._get_user(session, user_id)
+            user_id = request.user_id
 
+            user = await self._get_user(session, user_id)
             if not user:
                 await context.abort(grpc.StatusCode.NOT_FOUND, details=f"User {request.user_id} not found")
             message = self._model_to_message(user)
@@ -39,6 +36,11 @@ class AuthService(auth_pb2_grpc.AuthServiceServicer):
         except TokenInvalidError:
             await context.abort(grpc.StatusCode.UNAUTHENTICATED, details="Invalid token")
 
+        try:
+            user_id = int(payload.sub)
+        except (ValueError, TypeError):
+            await context.abort(grpc.StatusCode.UNAUTHENTICATED, details="Invalid token subject")
+        
         async with new_session() as session:
             user = await self._get_user(session, int(payload.sub))
 
