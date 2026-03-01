@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
-from .database import setup_database
+from .database import setup_database, teardown_database
 from .auth.router import router as auth_router
 from .users.router import router as users_router
 from .config import settings
@@ -23,6 +23,7 @@ async def lifespan(app: FastAPI):
     grpc_server = await start_grpc_server()
     yield
     await grpc_server.stop(grace=5)
+    await teardown_database()
 
 app = FastAPI(lifespan=lifespan, docs_url=f'{prefix}/docs', openapi_url=f'{prefix}/openapi.json')
 
