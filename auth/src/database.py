@@ -23,3 +23,6 @@ async def setup_database():
 async def drop_database():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
+
+async def teardown_database():
+    await engine.dispose()

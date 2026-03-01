@@ -8,3 +8,5 @@ dotenv
 pyjwt[crypto]
 bcrypt
 passlib[argon2]
+grpcio=1.78.0
+grpcio-tools=1.78.0

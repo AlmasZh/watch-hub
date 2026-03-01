@@ -6,6 +6,7 @@ from passlib.context import CryptContext
 from pydantic import BaseModel, ConfigDict, ValidationError
 
 from src.config import settings
+from .exceptions import TokenExpiredError, TokenInvalidError
 
 
 class TokenPayload(BaseModel):
@@ -40,6 +41,7 @@ def get_current_token_payload(token: str) -> TokenPayload:
             token, 
             key=settings.JWT_PUBLIC_KEY,
             algorithms=["RS256"],
+            issuer=settings.JWT_ISSUER,
             options={"require": ["exp", "iss", "sub"]}
         )
         
@@ -62,6 +64,22 @@ def get_current_token_payload(token: str) -> TokenPayload:
             detail="Internal server error during verification"
         )
 
+async def get_current_token_payload_grpc(token: str) -> TokenPayload:
+    try:
+        payload_data = jwt.decode(
+            token,
+            key=settings.JWT_PUBLIC_KEY,
+            algorithms=["RS256"],
+            issuer=settings.JWT_ISSUER,
+            options={"require": ["exp", "iss", "sub"]}
+        )
+        return TokenPayload.model_validate(payload_data)
+    except jwt.ExpiredSignatureError:
+        raise TokenExpiredError("Token has expired")
+    except (jwt.InvalidTokenError, ValidationError):
+        raise TokenInvalidError("Invalid token")
+    except Exception:
+        raise TokenInvalidError("Internal error during token verification")
 
 def username_validator(value: str):
     if not value:
