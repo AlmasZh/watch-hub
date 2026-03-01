@@ -1,5 +1,4 @@
 from fastapi import APIRouter
-from fastapi.security.http import HTTPBearer
 from uuid import UUID
 
 from src.database import SessionDep
@@ -8,7 +7,6 @@ from .schemas import MovieResponse
 
 
 router = APIRouter(tags=["video"])
-security = HTTPBearer()
 
 @router.get('/movies', response_model=list[MovieResponse])
 async def get_recommended_movies(db: SessionDep):
