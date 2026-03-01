@@ -25,7 +25,6 @@ class AuthService(auth_pb2_grpc.AuthServiceServicer):
             if not user:
                 await context.abort(grpc.StatusCode.NOT_FOUND, details=f"User {request.user_id} not found")
             message = self._model_to_message(user)
-            print(f'\n\n Message: {message}')
             return message
 
     async def ValidateToken(self, request, context: grpc.aio.ServicerContext) -> auth_pb2.UserResponse:
@@ -42,7 +41,7 @@ class AuthService(auth_pb2_grpc.AuthServiceServicer):
             await context.abort(grpc.StatusCode.UNAUTHENTICATED, details="Invalid token subject")
         
         async with new_session() as session:
-            user = await self._get_user(session, int(payload.sub))
+            user = await self._get_user(session, user_id)
 
             if not user:
                 await context.abort(grpc.StatusCode.UNAUTHENTICATED, details=f"User no longer exists")
