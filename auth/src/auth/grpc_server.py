@@ -53,7 +53,7 @@ class AuthService(auth_pb2_grpc.AuthServiceServicer):
             id=user.id,
             email=user.email,
             username=user.username,
-            display_name=user.display_name,
+            display_name=user.display_name or "",
             picture=user.picture or "",
             date_of_birth=user.date_of_birth.isoformat() if user.date_of_birth else ""
         )
