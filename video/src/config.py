@@ -21,6 +21,8 @@ class Settings(BaseSettings):
     jwt_algorithm: str = "RS256"
     jwt_issuer: str = "watch-together"
 
+    grpc_addr: str = "auth:50051"
+
     api_prefix: str = "/api/video"
     app_env: Literal["dev", "test", "prod"] = "prod"
 
