@@ -18,6 +18,8 @@ class AuthGrpcClient:
             await self.channel.close()
     
     async def validate_token(self, token: str):
+        if self.stub is None:
+            raise RuntimeError("AuthGrpcClient is not connected. Call connect() before validate_token().")
         try:
             request = auth_pb2.ValidateTokenRequest(token=token)
             response = await self.stub.ValidateToken(request)
