@@ -41,6 +41,7 @@ def get_current_token_payload(token: str) -> TokenPayload:
             token, 
             key=settings.JWT_PUBLIC_KEY,
             algorithms=["RS256"],
+            issuer=settings.JWT_ISSUER,
             options={"require": ["exp", "iss", "sub"]}
         )
         
@@ -69,6 +70,7 @@ async def get_current_token_payload_grpc(token: str) -> TokenPayload:
             token,
             key=settings.JWT_PUBLIC_KEY,
             algorithms=["RS256"],
+            issuer=settings.JWT_ISSUER,
             options={"require": ["exp", "iss", "sub"]}
         )
         return TokenPayload.model_validate(payload_data)
