@@ -5,6 +5,7 @@ from contextlib import asynccontextmanager
 from .database import setup_db
 from .config import settings
 from .video.router import router as video_router
+from .auth.auth_client import auth_grpc_client
 
 
 origins = [
@@ -18,7 +19,10 @@ prefix = settings.api_prefix
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # await setup_db()
+    auth_grpc_client.connect()
     yield
+    
+    await auth_grpc_client.close()
 
 app = FastAPI(lifespan=lifespan, docs_url=f'{prefix}/docs', openapi_url=f'{prefix}/openapi.json')
 
