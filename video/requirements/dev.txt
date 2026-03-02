@@ -6,5 +6,5 @@ python-multipart
 asyncpg
 sqlalchemy
 pydantic-settings
-grpcio=1.78.0
-grpcio-tools=1.78.0
+grpcio==1.78.0
+grpcio-tools==1.78.0
