@@ -118,6 +118,24 @@ services:
     networks:
       - wt-internal
 
+  localstack:
+    image: localstack/localstack-pro:latest
+    ports:
+      - "127.0.0.1:4566:4566"            # LocalStack Gateway
+      - "127.0.0.1:4510-4559:4510-4559"  # External services port range
+      - "127.0.0.1:443:443"              # HTTPS Gateway (Pro feature)
+    environment:
+      - LOCALSTACK_AUTH_TOKEN=${LOCALSTACK_AUTH_TOKEN}
+      # Persistence (keeps your resources after restart)
+      # - PERSISTENCE=1
+      - DEBUG=1
+      - LS_LOG=info
+    volumes:
+      - "./volume:/var/lib/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    networks:
+      - wt-internal
+
 
 secrets:
   db_password:
