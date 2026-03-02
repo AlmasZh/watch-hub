@@ -1,4 +1,5 @@
 aioboto3
+types-aioboto3[s3]
 alembic
 fastapi
 uvicorn[standard]
