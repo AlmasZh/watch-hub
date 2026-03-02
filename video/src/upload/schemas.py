@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
 
-class UploadStarRequest(BaseModel):
+class UploadStartRequest(BaseModel):
     filename: str
     parts_count: int
     content_type: str = "video/mp4"

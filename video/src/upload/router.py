@@ -3,13 +3,13 @@ import uuid
 
 from .storage_client import S3StorageClient
 from .dependencies import get_storage_client
-from .schemas import UploadCompleteRequest, UploadStarRequest
+from .schemas import UploadCompleteRequest, UploadStartRequest
 
 
 router = APIRouter(prefix="/upload", tags=["upload"])
 
 @router.post("/start")
-async def start_multipart_upload(request: UploadStarRequest, storage: S3StorageClient = Depends(get_storage_client)):
+async def start_multipart_upload(request: UploadStartRequest, storage: S3StorageClient = Depends(get_storage_client)):
     file_key = f"raw_videos/{uuid.uuid4()}-{request.filename}"
 
     upload_id = await storage.create_multipart_upload(
