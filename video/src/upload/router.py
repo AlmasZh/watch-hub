@@ -11,7 +11,7 @@ router = APIRouter(prefix="/upload", tags=["upload"])
 
 StorageClientDep = Annotated[S3StorageClient, Depends(get_storage_client)]
 
-@router.post("/start", response_model=UploadStartResponse)
+@router.post("/start", response_model=UploadStartResponse, status_code=status.HTTP_201_CREATED)
 async def start_multipart_upload(request: UploadStartRequest, storage: StorageClientDep):
     file_key = f"raw_videos/{uuid.uuid4()}-{request.filename}"
 
