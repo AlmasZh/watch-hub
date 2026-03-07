@@ -10,7 +10,7 @@ router = APIRouter(prefix="/upload", tags=["upload"])
 
 @router.post("/start")
 async def start_multipart_upload(request: UploadStartRequest, storage: S3StorageClient = Depends(get_storage_client)):
-    file_key = f"raw_videos/{uuid.uuid4()}-{request.filename}"
+    file_key = f"raw_videos/{uuid.uuid4()}-{request.file_key}"
 
     upload_id = await storage.create_multipart_upload(
         object_key=file_key, 
@@ -33,7 +33,7 @@ async def complete_multipart_upload(request: UploadCompleteRequest, storage: S3S
 
     try:
         await storage.complete_multipart_upload(
-            object_key=request.filename,
+            object_key=request.file_key,
             upload_id=request.upload_id,
             parts=parts_dict
         )
@@ -41,10 +41,10 @@ async def complete_multipart_upload(request: UploadCompleteRequest, storage: S3S
         # Store video data using sqlalchemy
         # ...
 
-        return {"message": "Upload completed successfully", "file_key": request.filename}
+        return {"message": "Upload completed successfully", "file_key": request.file_key}
     except Exception as e:
         await storage.abort_multipart_upload(
-            request.filename,
+            request.file_key,
             upload_id=request.upload_id,
         )
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))

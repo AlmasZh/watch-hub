@@ -2,7 +2,7 @@ from pydantic import BaseModel
 
 
 class UploadStartRequest(BaseModel):
-    filename: str
+    file_key: str
     parts_count: int
     content_type: str = "video/mp4"
 
@@ -11,6 +11,6 @@ class PartInfo(BaseModel):
     ETag: str
 
 class UploadCompleteRequest(BaseModel):
-    filename: str
+    file_key: str
     upload_id: str
     parts: list[PartInfo]
