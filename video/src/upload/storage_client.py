@@ -67,7 +67,7 @@ class S3StorageClient:
                         ExpiresIn=expires_in,
                     )
                     presigned_urls.append({
-                        "part_number": part_number,
+                        "partNumber": part_number,
                         "url": url
                     })
             return presigned_urls
