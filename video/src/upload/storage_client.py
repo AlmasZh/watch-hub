@@ -1,6 +1,6 @@
 import aioboto3
 from types_aiobotocore_s3 import S3Client
-from typing import Any
+from typing import Any, AsyncContextManager
 from botocore.exceptions import ClientError
 from botocore.config import Config
 
@@ -29,16 +29,16 @@ class S3StorageClient:
             region_name=region_name,
         )
     
-    async def get_client(self) -> S3Client:
+    def get_client(self) -> AsyncContextManager[S3Client]:
         return self.session.client(
             "s3", 
             endpoint_url=self.endpoint_url,
             config=self.boto_config
         )
-
+    
     async def create_multipart_upload(self, object_key: str, content_type: str = "video/mp4"):
         try:
-            async with await self.get_client() as s3:
+            async with self.get_client() as s3:
                 response = await s3.create_multipart_upload(
                     Bucket=self.bucket_name,
                     Key=object_key,
@@ -54,7 +54,7 @@ class S3StorageClient:
     ) -> list[dict[str, Any]]:
         presigned_urls = []
         try:
-            async with await self.get_client() as s3:
+            async with self.get_client() as s3:
                 for part_number in range(1, parts_count + 1):
                     url = await s3.generate_presigned_url(
                         ClientMethod="upload_part",
@@ -79,7 +79,7 @@ class S3StorageClient:
         sorted_parts = sorted(parts, key=lambda x: x["PartNumber"])
 
         try:
-            async with await self.get_client() as s3:
+            async with self.get_client() as s3:
                 response = await s3.complete_multipart_upload(
                     Bucket=self.bucket_name,
                     Key=object_key,
@@ -92,7 +92,7 @@ class S3StorageClient:
             raise
     async def abort_multipart_upload(self, object_key: str, upload_id: str) -> None:
         try:
-            async with await self.get_client() as s3:
+            async with self.get_client() as s3:
                 await s3.abort_multipart_upload(
                     Bucket=self.bucket_name,
                     Key=object_key,
