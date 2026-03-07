@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class UploadStartRequest(BaseModel):
@@ -7,8 +7,10 @@ class UploadStartRequest(BaseModel):
     content_type: str = "video/mp4"
 
 class PartInfo(BaseModel):
-    PartNumber: int
-    ETag: str
+    model_config = ConfigDict(populate_by_name=True)
+
+    part_number: int = Field(alias="PartNumber")
+    etag: str = Field(alias="ETag")
 
 class UploadCompleteRequest(BaseModel):
     file_key: str

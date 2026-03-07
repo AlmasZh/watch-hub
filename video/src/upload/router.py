@@ -29,7 +29,7 @@ async def start_multipart_upload(request: UploadStartRequest, storage: S3Storage
 
 @router.post("/complete")
 async def complete_multipart_upload(request: UploadCompleteRequest, storage: S3StorageClient = Depends(get_storage_client)):
-    parts_dict = [part.model_dump() for part in request.parts]
+    parts_dict = [part.model_dump(by_alias=True) for part in request.parts]
 
     try:
         await storage.complete_multipart_upload(
