@@ -2,7 +2,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 
 class UploadStartRequest(BaseModel):
-    file_key: str
+    filename: str
     parts_count: int
     content_type: str = "video/mp4"
 

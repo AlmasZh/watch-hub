@@ -10,7 +10,7 @@ router = APIRouter(prefix="/upload", tags=["upload"])
 
 @router.post("/start")
 async def start_multipart_upload(request: UploadStartRequest, storage: S3StorageClient = Depends(get_storage_client)):
-    file_key = f"raw_videos/{uuid.uuid4()}-{request.file_key}"
+    file_key = f"raw_videos/{uuid.uuid4()}-{request.filename}"
 
     upload_id = await storage.create_multipart_upload(
         object_key=file_key, 
