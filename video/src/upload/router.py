@@ -43,8 +43,15 @@ async def complete_multipart_upload(request: UploadCompleteRequest, storage: S3S
 
         return {"message": "Upload completed successfully", "file_key": request.file_key}
     except Exception as e:
-        await storage.abort_multipart_upload(
-            request.file_key,
-            upload_id=request.upload_id,
+        try:
+            await storage.abort_multipart_upload(
+                request.file_key,
+                upload_id=request.upload_id,
+            )
+        except Exception as abort_exc:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(abort_exc))
+
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, 
+            detail="Failed to complete multipart upload. The operation was aborted."
         )
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
