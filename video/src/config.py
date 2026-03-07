@@ -21,6 +21,13 @@ class Settings(BaseSettings):
     jwt_algorithm: str = "RS256"
     jwt_issuer: str = "watch-together"
 
+    s3_bucket_name: str
+    aws_access_key_id: str
+    aws_secret_access_key: str
+    aws_region: str
+    s3_endpoint_url: str
+    s3_force_path_style: bool | None = None
+
     grpc_addr: str = "auth:50051"
 
     api_prefix: str = "/api/video"

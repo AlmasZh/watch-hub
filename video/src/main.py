@@ -5,6 +5,7 @@ from contextlib import asynccontextmanager
 from .database import setup_db
 from .config import settings
 from .video.router import router as video_router
+from .upload.router import router as upload_router
 from .auth.auth_client import auth_grpc_client
 
 
@@ -35,6 +36,7 @@ app.add_middleware(
 )
 
 app.include_router(video_router, prefix=prefix)
+app.include_router(upload_router, prefix=prefix)
 
 @app.get(f'{prefix}/health')
 async def health_check():
