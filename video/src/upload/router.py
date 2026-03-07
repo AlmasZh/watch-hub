@@ -1,4 +1,5 @@
 from fastapi import HTTPException, Depends, APIRouter, status
+from typing import Annotated
 import uuid
 
 from .storage_client import S3StorageClient
@@ -8,8 +9,10 @@ from .schemas import UploadCompleteRequest, UploadStartRequest, UploadStartRespo
 
 router = APIRouter(prefix="/upload", tags=["upload"])
 
+StorageClientDep = Annotated[S3StorageClient, Depends(get_storage_client)]
+
 @router.post("/start", response_model=UploadStartResponse)
-async def start_multipart_upload(request: UploadStartRequest, storage: S3StorageClient = Depends(get_storage_client)):
+async def start_multipart_upload(request: UploadStartRequest, storage: StorageClientDep):
     file_key = f"raw_videos/{uuid.uuid4()}-{request.filename}"
 
     upload_id = await storage.create_multipart_upload(
@@ -23,7 +26,7 @@ async def start_multipart_upload(request: UploadStartRequest, storage: S3Storage
     return UploadStartResponse(file_key=file_key, presigned_urls=urls, upload_id=upload_id)
 
 @router.post("/complete")
-async def complete_multipart_upload(request: UploadCompleteRequest, storage: S3StorageClient = Depends(get_storage_client)):
+async def complete_multipart_upload(request: UploadCompleteRequest, storage: StorageClientDep):
     parts_dict = [part.model_dump(by_alias=True) for part in request.parts]
 
     try:
