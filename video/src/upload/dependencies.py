@@ -1,4 +1,4 @@
-from src.config import settings # Your pydantic BaseSettings
+from src.config import settings
 from .storage_client import S3StorageClient
 
 storage_client = S3StorageClient(
