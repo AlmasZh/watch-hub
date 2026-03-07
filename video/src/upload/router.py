@@ -3,12 +3,12 @@ import uuid
 
 from .storage_client import S3StorageClient
 from .dependencies import get_storage_client
-from .schemas import UploadCompleteRequest, UploadStartRequest
+from .schemas import UploadCompleteRequest, UploadStartRequest, UploadStartResponse
 
 
 router = APIRouter(prefix="/upload", tags=["upload"])
 
-@router.post("/start")
+@router.post("/start", response_model=UploadStartResponse)
 async def start_multipart_upload(request: UploadStartRequest, storage: S3StorageClient = Depends(get_storage_client)):
     file_key = f"raw_videos/{uuid.uuid4()}-{request.filename}"
 
@@ -20,12 +20,7 @@ async def start_multipart_upload(request: UploadStartRequest, storage: S3Storage
     urls = await storage.generate_presigned_urls(
         object_key=file_key, upload_id=upload_id, parts_count=request.parts_count
     )
-    
-    return {
-        "file_key": file_key,
-        "upload_id": upload_id,
-        "presigned_urls": urls
-    }
+    return UploadStartResponse(file_key=file_key, presigned_urls=urls, upload_id=upload_id)
 
 @router.post("/complete")
 async def complete_multipart_upload(request: UploadCompleteRequest, storage: S3StorageClient = Depends(get_storage_client)):
