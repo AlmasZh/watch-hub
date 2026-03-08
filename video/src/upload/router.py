@@ -1,15 +1,11 @@
-from fastapi import HTTPException, Depends, APIRouter, status
-from typing import Annotated
+from fastapi import HTTPException, APIRouter, status
 import uuid
 
-from .storage_client import S3StorageClient
-from .dependencies import get_storage_client
 from .schemas import UploadCompleteRequest, UploadStartRequest, UploadStartResponse
+from .dependencies import StorageClientDep
 
 
 router = APIRouter(prefix="/upload", tags=["upload"])
-
-StorageClientDep = Annotated[S3StorageClient, Depends(get_storage_client)]
 
 @router.post("/start", response_model=UploadStartResponse, status_code=status.HTTP_201_CREATED)
 async def start_multipart_upload(request: UploadStartRequest, storage: StorageClientDep):
