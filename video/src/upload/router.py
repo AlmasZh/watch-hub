@@ -1,8 +1,12 @@
 from fastapi import HTTPException, APIRouter, status
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 import uuid
 
 from .schemas import UploadCompleteRequest, UploadStartRequest, UploadStartResponse
 from .dependencies import StorageClientDep
+from ..auth.dependencies import UserDep
+from ..video.models import UserVideo
+from ..database import SessionDep
 
 
 router = APIRouter(prefix="/upload", tags=["upload"])
@@ -22,7 +26,12 @@ async def start_multipart_upload(request: UploadStartRequest, storage: StorageCl
     return UploadStartResponse(file_key=file_key, presigned_urls=urls, upload_id=upload_id)
 
 @router.post("/complete")
-async def complete_multipart_upload(request: UploadCompleteRequest, storage: StorageClientDep):
+async def complete_multipart_upload(
+        request: UploadCompleteRequest,
+        storage: StorageClientDep, 
+        user: UserDep,
+        db: SessionDep
+    ):
     parts_dict = [part.model_dump(by_alias=True) for part in request.parts]
 
     try:
@@ -32,10 +41,27 @@ async def complete_multipart_upload(request: UploadCompleteRequest, storage: Sto
             parts=parts_dict
         )
         
-        # Store video data using sqlalchemy
-        # ...
+        video = UserVideo(
+            owner_id=user.id,
+            title=request.filename,
+            original_file_name=request.filename,
+            storage_key=request.file_key,
+            stream_url=request.file_key, # just for testing, must be changed in future
+            thumbnail_url="", # TODO: set thumbnail_url after thumbnail generation pipeline is implemented
+        )
+        db.add(video)
 
-        return {"message": "Upload completed successfully", "file_key": request.file_key}
+        try:
+            await db.commit()
+        except SQLAlchemyError as e:
+            await db.rollback()
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+                detail="An internal server error occurred while creating the video."
+            )
+        await db.refresh(video)
+
+        return {"message": "Upload completed successfully", "video": video}
     except Exception as e:
         try:
             await storage.abort_multipart_upload(
