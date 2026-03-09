@@ -15,7 +15,7 @@ async def get_movies(db: AsyncSession) -> list[Movie]:
 async def get_movie_by_uuid(uuid: UUID, db: AsyncSession) -> Movie:
     movie = await db.get(Movie, uuid)
 
-    if not Movie:
+    if not movie:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Movie not found")
     return movie
 
