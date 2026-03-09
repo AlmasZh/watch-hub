@@ -1,5 +1,5 @@
 from fastapi import HTTPException, APIRouter, status
-from sqlalchemy.exc import IntegrityError, SQLAlchemyError
+from sqlalchemy.exc import SQLAlchemyError
 import uuid
 
 from .schemas import UploadCompleteRequest, UploadStartRequest, UploadStartResponse
