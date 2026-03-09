@@ -40,29 +40,7 @@ async def complete_multipart_upload(
             upload_id=request.upload_id,
             parts=parts_dict
         )
-        
-        video = UserVideo(
-            owner_id=user.id,
-            title=request.filename,
-            original_file_name=request.filename,
-            storage_key=request.file_key,
-            stream_url=request.file_key, # just for testing, must be changed in future
-            thumbnail_url="", # TODO: set thumbnail_url after thumbnail generation pipeline is implemented
-        )
-        db.add(video)
-
-        try:
-            await db.commit()
-        except SQLAlchemyError as e:
-            await db.rollback()
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
-                detail="An internal server error occurred while creating the video."
-            )
-        await db.refresh(video)
-
-        return {"message": "Upload completed successfully", "video": video}
-    except Exception as e:
+    except Exception as store_exc:
         try:
             await storage.abort_multipart_upload(
                 request.file_key,
@@ -75,3 +53,26 @@ async def complete_multipart_upload(
             status_code=status.HTTP_400_BAD_REQUEST, 
             detail="Failed to complete multipart upload. The operation was aborted."
         )
+    
+    video = UserVideo(
+        owner_id=user.id,
+        title=request.filename,
+        original_file_name=request.filename,
+        storage_key=request.file_key,
+        stream_url=request.file_key, # just for testing, must be changed in future
+        thumbnail_url="", # TODO: set thumbnail_url after thumbnail generation pipeline is implemented
+    )
+    db.add(video)
+
+    try:
+        await db.commit()
+        await db.refresh(video)
+        return {"message": "Upload completed successfully", "video": video}
+
+    except SQLAlchemyError as db_exc:
+        await db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+            detail="An internal server error occurred while creating the video."
+        )
+
