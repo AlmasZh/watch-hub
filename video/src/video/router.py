@@ -19,7 +19,7 @@ async def get_movie(uuid: UUID, db: SessionDep):
     movie = await get_movie_by_uuid(uuid, db)
     return movie
 
-@router.get('/videos', response_model=list[UserVideoResponse] | None)
+@router.get('/videos', response_model=list[UserVideoResponse])
 async def get_user_videos(user: UserDep, db: SessionDep):
     user_videos = await get_all_user_videos(owner_id=user.id, db=db)
     return user_videos
