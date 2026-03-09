@@ -1,6 +1,7 @@
 from pydantic import BaseModel, ConfigDict, HttpUrl
 from pydantic.alias_generators import to_camel
 from uuid import UUID
+from datetime import datetime
 from typing import Literal
 
 
@@ -27,3 +28,19 @@ class MovieResponse(BaseModel):
     
     status: Literal["pending", "processing", "ready", "failed"]
     type: str
+
+class UserVideoResponse(BaseModel):
+    model_config = ConfigDict(
+        alias_generator=to_camel,
+        validate_by_alias=True,
+        validate_by_name=True,
+        from_attributes=True
+    )
+    
+    stream_url: str
+    thumbnail_url: str | None = None
+    duration_seconds: int
+    original_file_name: str
+    
+    created_at: datetime            
+    updated_at: datetime
