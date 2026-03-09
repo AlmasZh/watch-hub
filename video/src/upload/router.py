@@ -1,15 +1,15 @@
-from fastapi import HTTPException, Depends, APIRouter, status
-from typing import Annotated
+from fastapi import HTTPException, APIRouter, status
+from sqlalchemy.exc import SQLAlchemyError
 import uuid
 
-from .storage_client import S3StorageClient
-from .dependencies import get_storage_client
 from .schemas import UploadCompleteRequest, UploadStartRequest, UploadStartResponse
+from .dependencies import StorageClientDep
+from ..auth.dependencies import UserDep
+from ..video.models import UserVideo
+from ..database import SessionDep
 
 
 router = APIRouter(prefix="/upload", tags=["upload"])
-
-StorageClientDep = Annotated[S3StorageClient, Depends(get_storage_client)]
 
 @router.post("/start", response_model=UploadStartResponse, status_code=status.HTTP_201_CREATED)
 async def start_multipart_upload(request: UploadStartRequest, storage: StorageClientDep):
@@ -26,7 +26,12 @@ async def start_multipart_upload(request: UploadStartRequest, storage: StorageCl
     return UploadStartResponse(file_key=file_key, presigned_urls=urls, upload_id=upload_id)
 
 @router.post("/complete")
-async def complete_multipart_upload(request: UploadCompleteRequest, storage: StorageClientDep):
+async def complete_multipart_upload(
+        request: UploadCompleteRequest,
+        storage: StorageClientDep, 
+        user: UserDep,
+        db: SessionDep
+    ):
     parts_dict = [part.model_dump(by_alias=True) for part in request.parts]
 
     try:
@@ -35,12 +40,7 @@ async def complete_multipart_upload(request: UploadCompleteRequest, storage: Sto
             upload_id=request.upload_id,
             parts=parts_dict
         )
-        
-        # Store video data using sqlalchemy
-        # ...
-
-        return {"message": "Upload completed successfully", "file_key": request.file_key}
-    except Exception as e:
+    except Exception as store_exc:
         try:
             await storage.abort_multipart_upload(
                 request.file_key,
@@ -53,3 +53,26 @@ async def complete_multipart_upload(request: UploadCompleteRequest, storage: Sto
             status_code=status.HTTP_400_BAD_REQUEST, 
             detail="Failed to complete multipart upload. The operation was aborted."
         )
+    
+    video = UserVideo(
+        owner_id=user.id,
+        title=request.filename,
+        original_file_name=request.filename,
+        storage_key=request.file_key,
+        stream_url=request.file_key, # just for testing, must be changed in future
+        thumbnail_url="", # TODO: set thumbnail_url after thumbnail generation pipeline is implemented
+    )
+    db.add(video)
+
+    try:
+        await db.commit()
+        await db.refresh(video)
+        return {"message": "Upload completed successfully", "video": video}
+
+    except SQLAlchemyError as db_exc:
+        await db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+            detail="An internal server error occurred while creating the video."
+        )
+
