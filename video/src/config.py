@@ -29,7 +29,7 @@ class Settings(BaseSettings):
     s3_force_path_style: bool | None = None
 
     grpc_addr: str = "auth:50051"
-    auth_addr: str = "http://auth:8080"
+    auth_addr: str = "http://wt.com/api/auth"
 
     api_prefix: str = "/api/video"
     app_env: Literal["dev", "test", "prod"] = "prod"
