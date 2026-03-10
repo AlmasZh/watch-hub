@@ -10,6 +10,10 @@
   },
   "dependencies": {
     "@types/uuid": "^10.0.0",
+    "@uppy/aws-s3": "^5.1.0",
+    "@uppy/core": "^5.2.0",
+    "@uppy/dashboard": "^5.1.1",
+    "@uppy/react": "^5.2.0",
     "@vidstack/react": "^1.12.13",
     "clsx": "^2.1.1",
     "dashjs": "^5.1.1",
