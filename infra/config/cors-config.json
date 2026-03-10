@@ -1,0 +1,10 @@
+{
+  "CORSRules": [
+    {
+      "AllowedOrigins": ["http://wt.com", "http://localhost:*", "http://127.0.0.1:*"],
+      "AllowedHeaders": ["*"],
+      "AllowedMethods": ["GET", "PUT", "POST", "DELETE", "HEAD"],
+      "ExposeHeaders": ["ETag"]
+    }
+  ]
+}
