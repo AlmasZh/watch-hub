@@ -1,5 +1,5 @@
 import { authFetch } from '@/api/fetch-client';
-import { UploadCompleteRequest, UploadStartRequest, UploadStartResponse } from '@/types/video/upload';
+import { UploadCompleteRequest, UploadStartRequest, UploadStartResponse, UploadCompleteResponse } from '@/types/video/upload';
 
 export async function startUpload(request: UploadStartRequest): Promise<UploadStartResponse> {
     const response = await authFetch('/video/upload/start', {
@@ -14,7 +14,7 @@ export async function startUpload(request: UploadStartRequest): Promise<UploadSt
     return response.json();
 }
 
-export async function completeUpload(request: UploadCompleteRequest): Promise<any> {
+export async function completeUpload(request: UploadCompleteRequest): Promise<UploadCompleteResponse> {
     const response = await authFetch('/video/upload/complete', {
         method: 'POST',
         body: JSON.stringify(request)

@@ -2,7 +2,7 @@ from fastapi import HTTPException, APIRouter, status
 from sqlalchemy.exc import SQLAlchemyError
 import uuid
 
-from .schemas import UploadCompleteRequest, UploadStartRequest, UploadStartResponse
+from .schemas import UploadCompleteRequest, UploadStartRequest, UploadStartResponse, UploadCompleteResponse
 from .dependencies import StorageClientDep
 from ..auth.dependencies import UserDep
 from ..video.models import UserVideo
@@ -25,7 +25,7 @@ async def start_multipart_upload(request: UploadStartRequest, storage: StorageCl
     )
     return UploadStartResponse(file_key=file_key, presigned_urls=urls, upload_id=upload_id)
 
-@router.post("/complete")
+@router.post("/complete", response_model=UploadCompleteResponse)
 async def complete_multipart_upload(
         request: UploadCompleteRequest,
         storage: StorageClientDep, 
@@ -68,7 +68,7 @@ async def complete_multipart_upload(
     try:
         await db.commit()
         await db.refresh(video)
-        return {"message": "Upload completed successfully", "video": video}
+        return video
 
     except SQLAlchemyError as db_exc:
         await db.rollback()
@@ -76,4 +76,3 @@ async def complete_multipart_upload(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
             detail="An internal server error occurred while creating the video."
         )
-

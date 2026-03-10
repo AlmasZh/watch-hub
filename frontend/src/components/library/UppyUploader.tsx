@@ -5,12 +5,13 @@ import Uppy from "@uppy/core";
 // @ts-ignore
 import AwsS3 from "@uppy/aws-s3";
 import { startUpload, completeUpload } from "@/api/video/upload";
+import { UploadCompleteResponse } from "@/types/video/upload";
 import { UploadCloud, FileVideo, CheckCircle2, AlertCircle, X } from "lucide-react";
 
 import "@uppy/core/css/style.min.css";
 
 interface UppyUploaderProps {
-    onUploadSuccess: (video: any) => void;
+    onUploadSuccess: (video: UploadCompleteResponse) => void;
 }
 
 export default function UppyUploader({ onUploadSuccess }: UppyUploaderProps) {
@@ -123,9 +124,8 @@ export default function UppyUploader({ onUploadSuccess }: UppyUploaderProps) {
                 });
 
                 return {
-                    location: response.video?.stream_url || cache.fileKey,
-                    video: response.video,
-                    ...response,
+                    location: response.streamUrl,
+                    video: response,
                 };
             },
 
@@ -164,12 +164,12 @@ export default function UppyUploader({ onUploadSuccess }: UppyUploaderProps) {
                 setTimeout(() => onUploadSuccess(response.body.video), 1200);
             } else {
                 setTimeout(() => onUploadSuccess({
-                    id: file.id,
-                    title: file.name,
-                    thumbnail: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=2574&auto=format&fit=crop",
-                    duration: "00:00",
-                    createdAt: new Date(),
-                    size: (file.size ? (file.size / (1024 * 1024)).toFixed(2) + " MB" : "N/A")
+                    streamUrl: file.id,
+                    originalFileName: file.name,
+                    thumbnailUrl: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=2574&auto=format&fit=crop",
+                    durationSeconds: 0,
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
                 }), 1200);
             }
         };

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { getUserVideos } from "@/api/video/user-videos";
 import VideoTable, { Video } from "@/components/library/VideoTable";
 import UppyUploader from "@/components/library/UppyUploader";
+import { UploadCompleteResponse } from "@/types/video/upload";
 
 function formatDuration(seconds: number): string {
     const m = Math.floor(seconds / 60);
@@ -37,15 +38,15 @@ export default function LibraryPage() {
         fetchVideos();
     }, []);
 
-    const handleUploadSuccess = (videoData: any) => {
+    const handleUploadSuccess = (videoData: UploadCompleteResponse) => {
         setVideos((prev) => [
             {
-                id: videoData.id || videoData.stream_url,
-                title: videoData.title,
-                thumbnail: videoData.thumbnailUrl || videoData.thumbnail || "https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=2574&auto=format&fit=crop",
-                duration: videoData.duration || "00:00",
-                createdAt: new Date(),
-                size: videoData.size || "Unknown",
+                id: videoData.streamUrl,
+                title: videoData.originalFileName,
+                thumbnail: videoData.thumbnailUrl || "https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=2574&auto=format&fit=crop",
+                duration: formatDuration(videoData.durationSeconds || 0),
+                createdAt: new Date(videoData.createdAt),
+                size: "N/A",
             },
             ...prev
         ]);
