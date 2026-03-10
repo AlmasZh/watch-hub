@@ -134,7 +134,10 @@ services:
       - "./volume:/var/lib/localstack"
       - "/var/run/docker.sock:/var/run/docker.sock"
     networks:
-      - wt-internal
+      wt-internal:
+        aliases:
+          - s3.localhost.localstack.cloud
+          - localhost.localstack.cloud
 
 
 secrets:
