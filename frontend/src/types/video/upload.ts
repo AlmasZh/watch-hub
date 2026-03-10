@@ -21,6 +21,7 @@ export interface PartInfo {
 export interface UploadCompleteRequest {
     filename: string;
     fileKey: string;
+    durationSeconds: number;
     uploadId: string;
     parts: PartInfo[];
 }
