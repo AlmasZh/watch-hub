@@ -127,7 +127,7 @@ services:
     environment:
       - LOCALSTACK_AUTH_TOKEN=${LOCALSTACK_AUTH_TOKEN}
       # Persistence (keeps your resources after restart)
-      # - PERSISTENCE=1
+      - PERSISTENCE=1
       - DEBUG=1
       - LS_LOG=info
     volumes:
