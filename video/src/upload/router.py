@@ -59,6 +59,7 @@ async def complete_multipart_upload(
         title=request.filename,
         original_file_name=request.filename,
         storage_key=request.file_key,
+        duration_seconds=request.duration_seconds,
         stream_url=request.file_key, # just for testing, must be changed in future
         thumbnail_url="", # TODO: set thumbnail_url after thumbnail generation pipeline is implemented
     )

@@ -28,5 +28,6 @@ class UploadCompleteRequest(BaseModel):
     
     filename: str
     file_key: str
+    duration_seconds: int
     upload_id: str
     parts: list[PartInfo]
