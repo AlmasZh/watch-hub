@@ -1,31 +1,5 @@
 import { authFetch } from '@/api/fetch-client';
-
-export interface UploadStartRequest {
-    filename: string;
-    partsCount: number;
-    contentType?: string;
-}
-
-export interface UploadStartResponse {
-    fileKey: string;
-    uploadId: string;
-    presignedUrls: {
-        partNumber: number;
-        url: string;
-    }[];
-}
-
-export interface PartInfo {
-    PartNumber: number;
-    ETag: string;
-}
-
-export interface UploadCompleteRequest {
-    filename: string;
-    fileKey: string;
-    uploadId: string;
-    parts: PartInfo[];
-}
+import { UploadCompleteRequest, UploadStartRequest, UploadStartResponse } from '@/types/video/upload';
 
 export async function startUpload(request: UploadStartRequest): Promise<UploadStartResponse> {
     const response = await authFetch('/video/upload/start', {
