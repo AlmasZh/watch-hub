@@ -25,3 +25,12 @@ export interface UploadCompleteRequest {
     uploadId: string;
     parts: PartInfo[];
 }
+
+export interface UploadCompleteResponse {
+    streamUrl: string;
+    thumbnailUrl: string | null;
+    durationSeconds: number;
+    originalFileName: string;
+    createdAt: string;
+    updatedAt: string;
+}
