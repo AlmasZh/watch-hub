@@ -1,42 +1,44 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getUserVideos } from "@/api/video/user-videos";
 import UploadZone from "@/components/library/UploadZone";
 import ProcessingList, { ProcessingItem } from "@/components/library/ProcessingList";
 import VideoTable, { Video } from "@/components/library/VideoTable";
 import { v4 as uuidv4 } from "uuid";
 
-// Mock Data
-const INITIAL_VIDEOS = [
-    {
-        id: "1",
-        title: "My Gaming Highlight Reel 2024",
-        thumbnail: "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2670&auto=format&fit=crop",
-        duration: "10:24",
-        createdAt: new Date("2024-02-01"),
-        size: "1.2 GB"
-    },
-    {
-        id: "2",
-        title: "Vacation Vlog - Japan",
-        thumbnail: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?q=80&w=2670&auto=format&fit=crop",
-        duration: "45:12",
-        createdAt: new Date("2024-01-15"),
-        size: "4.5 GB"
-    },
-    {
-        id: "3",
-        title: "Project Demo Recording",
-        thumbnail: "https://images.unsplash.com/photo-1587620962725-abab7fe55159?q=80&w=2531&auto=format&fit=crop",
-        duration: "05:30",
-        createdAt: new Date("2024-03-10"),
-        size: "350 MB"
-    },
-];
+function formatDuration(seconds: number): string {
+    const m = Math.floor(seconds / 60);
+    const s = Math.floor(seconds % 60);
+    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+}
 
 export default function LibraryPage() {
     const [processingItems, setProcessingItems] = useState<ProcessingItem[]>([]);
-    const [videos, setVideos] = useState<Video[]>(INITIAL_VIDEOS);
+    const [videos, setVideos] = useState<Video[]>([]);
+
+    useEffect(() => {
+        const fetchVideos = async () => {
+            try {
+                const data = await getUserVideos();
+                const formattedVideos: Video[] = data.map((v) => ({
+                    id: v.streamUrl, // Fallback ID for now
+                    title: v.originalFileName,
+                    thumbnail: v.thumbnailUrl || "https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=2574&auto=format&fit=crop",
+                    duration: formatDuration(v.durationSeconds),
+                    createdAt: new Date(v.createdAt),
+                    size: "N/A"
+                }));
+                // Sort by recent by default
+                formattedVideos.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+                setVideos(formattedVideos);
+            } catch (error) {
+                console.error("Failed to fetch videos", error);
+            }
+        };
+
+        fetchVideos();
+    }, []);
 
     const handleFileSelect = (files: FileList | null) => {
         if (!files) return;
