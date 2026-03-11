@@ -30,7 +30,7 @@ class UploadCompleteRequest(BaseModel):
     
     filename: str
     file_key: str
-    duration_seconds: int
+    duration_seconds: int = Field(ge=0)
     upload_id: str
     parts: list[PartInfo]
 
