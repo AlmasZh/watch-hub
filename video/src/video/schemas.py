@@ -37,6 +37,7 @@ class UserVideoResponse(BaseModel):
         from_attributes=True
     )
     
+    id: UUID
     stream_url: str
     thumbnail_url: str | None = None
     duration_seconds: int
