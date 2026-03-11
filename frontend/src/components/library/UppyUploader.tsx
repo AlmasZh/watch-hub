@@ -164,20 +164,13 @@ export default function UppyUploader({ onUploadSuccess }: UppyUploaderProps) {
         };
 
         const onComplete = (file: any, response: any) => {
-            setUploadState(prev => ({ ...prev, status: 'success', progress: 100 }));
-            if (response.body?.video) {
-                setTimeout(() => onUploadSuccess(response.body.video), 1200);
-            } else {
-                setTimeout(() => onUploadSuccess({
-                    id: file.id,
-                    streamUrl: file.id,
-                    originalFileName: file.name,
-                    thumbnailUrl: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=2574&auto=format&fit=crop",
-                    durationSeconds: 0,
-                    createdAt: new Date().toISOString(),
-                    updatedAt: new Date().toISOString()
-                }), 1200);
+            const video = response.body?.video as UploadCompleteResponse | undefined;
+            if (!video) {
+                setUploadState(prev => ({ ...prev, status: 'error', error: 'Upload completed but video data is unavailable' }));
+                return;
             }
+            setUploadState(prev => ({ ...prev, status: 'success', progress: 100 }));
+            setTimeout(() => onUploadSuccess(video), 1200);
         };
 
         const onError = (file: any, error: any) => {
