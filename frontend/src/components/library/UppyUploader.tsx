@@ -116,7 +116,7 @@ export default function UppyUploader({ onUploadSuccess }: UppyUploaderProps) {
                     filename: file.name,
                     fileKey: cache.fileKey,
                     uploadId: cache.uploadId,
-                    durationSeconds: Math.round(durationSeconds),
+                    durationSeconds: Number.isFinite(durationSeconds) ? Math.round(durationSeconds) : 0,
                     parts: uploadData.parts.map((p: any) => {
                         if (!p.PartNumber || !p.ETag) {
                             throw new Error(`Invalid part entry missing PartNumber or ETag: ${JSON.stringify(p)}`);
