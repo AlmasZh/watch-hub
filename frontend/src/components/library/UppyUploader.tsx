@@ -117,10 +117,15 @@ export default function UppyUploader({ onUploadSuccess }: UppyUploaderProps) {
                     fileKey: cache.fileKey,
                     uploadId: cache.uploadId,
                     durationSeconds: Math.round(durationSeconds),
-                    parts: uploadData.parts.map((p: any) => ({
-                        PartNumber: p.PartNumber || 0,
-                        ETag: p.ETag || "",
-                    })),
+                    parts: uploadData.parts.map((p: any) => {
+                        if (!p.PartNumber || !p.ETag) {
+                            throw new Error(`Invalid part entry missing PartNumber or ETag: ${JSON.stringify(p)}`);
+                        }
+                        return {
+                            PartNumber: p.PartNumber,
+                            ETag: p.ETag,
+                        };
+                    }),
                 });
 
                 return {
@@ -164,6 +169,7 @@ export default function UppyUploader({ onUploadSuccess }: UppyUploaderProps) {
                 setTimeout(() => onUploadSuccess(response.body.video), 1200);
             } else {
                 setTimeout(() => onUploadSuccess({
+                    id: file.id,
                     streamUrl: file.id,
                     originalFileName: file.name,
                     thumbnailUrl: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=2574&auto=format&fit=crop",
