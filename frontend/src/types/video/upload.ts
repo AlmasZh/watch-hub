@@ -27,6 +27,7 @@ export interface UploadCompleteRequest {
 }
 
 export interface UploadCompleteResponse {
+    id: string;
     streamUrl: string;
     thumbnailUrl: string | null;
     durationSeconds: number;

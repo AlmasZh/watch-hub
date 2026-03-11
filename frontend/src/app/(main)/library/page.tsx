@@ -20,7 +20,7 @@ export default function LibraryPage() {
             try {
                 const data = await getUserVideos();
                 const formattedVideos: Video[] = data.map((v) => ({
-                    id: v.streamUrl, // Fallback ID for now
+                    id: v.id,
                     title: v.originalFileName,
                     thumbnail: v.thumbnailUrl || "https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=2574&auto=format&fit=crop",
                     duration: formatDuration(v.durationSeconds),
@@ -41,7 +41,7 @@ export default function LibraryPage() {
     const handleUploadSuccess = (videoData: UploadCompleteResponse) => {
         setVideos((prev) => [
             {
-                id: videoData.streamUrl,
+                id: videoData.id,
                 title: videoData.originalFileName,
                 thumbnail: videoData.thumbnailUrl || "https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=2574&auto=format&fit=crop",
                 duration: formatDuration(videoData.durationSeconds || 0),
