@@ -9,6 +9,7 @@ export interface Video {
     title: string;
     thumbnail: string;
     duration: string;
+    streamUrl: string;
     createdAt: Date;
     size: string;
 }
