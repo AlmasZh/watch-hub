@@ -24,6 +24,7 @@ export default function LibraryPage() {
                     title: v.originalFileName,
                     thumbnail: v.thumbnailUrl || "https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=2574&auto=format&fit=crop",
                     duration: formatDuration(v.durationSeconds),
+                    streamUrl: v.streamUrl,
                     createdAt: new Date(v.createdAt),
                     size: "N/A"
                 }));
@@ -45,6 +46,7 @@ export default function LibraryPage() {
                 title: videoData.originalFileName,
                 thumbnail: videoData.thumbnailUrl || "https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=2574&auto=format&fit=crop",
                 duration: formatDuration(videoData.durationSeconds || 0),
+                streamUrl: videoData.streamUrl,
                 createdAt: new Date(videoData.createdAt),
                 size: "N/A",
             },
