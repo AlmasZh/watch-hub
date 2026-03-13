@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { getUserVideos } from "@/api/video/user-videos";
 import VideoTable, { Video } from "@/components/library/VideoTable";
 import UppyUploader from "@/components/library/UppyUploader";
+import VideoPlayerModal from "@/components/library/VideoPlayerModal";
 import { UploadCompleteResponse } from "@/types/video/upload";
 
 function formatDuration(seconds: number): string {
@@ -14,6 +15,7 @@ function formatDuration(seconds: number): string {
 
 export default function LibraryPage() {
     const [videos, setVideos] = useState<Video[]>([]);
+    const [playingVideo, setPlayingVideo] = useState<Video | null>(null);
 
     useEffect(() => {
         const fetchVideos = async () => {
@@ -68,6 +70,10 @@ export default function LibraryPage() {
 
     const handlePlay = (id: string) => {
         console.log(`Playing video ${id}`);
+        const video = videos.find(v => v.id === id);
+        if (video) {
+            setPlayingVideo(video);
+        }
     };
 
     return (
@@ -86,6 +92,14 @@ export default function LibraryPage() {
                     onPlay={handlePlay}
                     onDelete={handleDeleteVideo}
                     onCopyLink={handleCopyLink}
+                />
+
+                {/* Video Player Modal */}
+                <VideoPlayerModal
+                    isOpen={!!playingVideo}
+                    onClose={() => setPlayingVideo(null)}
+                    streamUrl={playingVideo?.streamUrl || ""}
+                    title={playingVideo?.title || ""}
                 />
             </div>
         </div>
