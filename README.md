@@ -1,1 +1,1 @@
-# watch-together
+# watch-hub
