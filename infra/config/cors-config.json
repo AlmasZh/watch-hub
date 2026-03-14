@@ -1,7 +1,7 @@
 {
   "CORSRules": [
     {
-      "AllowedOrigins": ["http://wh.com", "http://localhost:*", "http://127.0.0.1:*", "https://app.localstack.cloud"],
+      "AllowedOrigins": ["http://wh.com", "http://www.wt.com", "http://localhost:*", "http://127.0.0.1:*", "https://app.localstack.cloud"],
       "AllowedHeaders": ["*"],
       "AllowedMethods": ["GET", "PUT", "POST", "DELETE", "HEAD"],
       "ExposeHeaders": ["ETag"]
