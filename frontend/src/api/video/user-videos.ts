@@ -10,3 +10,13 @@ export async function getUserVideos(): Promise<UserVideoResponse[]> {
 
     return response.json();
 }
+
+export async function deleteUserVideo(id: string): Promise<void> {
+    const response = await authFetch(`/video/${id}`, {
+        method: 'DELETE',
+    });
+
+    if (!response.ok) {
+        throw new Error('Failed to delete video');
+    }
+}
