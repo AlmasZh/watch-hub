@@ -15,7 +15,7 @@ class Settings:
         self.JWT_PUBLIC_KEY = self._get_secret("jwt_public")
         self.JWT_PRIVATE_KEY = self._get_secret("jwt_private")
         self.JWT_ALGORITHM = "RS256"
-        self.JWT_ISSUER = "watch-hub"
+        self.JWT_ISSUER = os.getenv("JWT_ISSUER", "watch-hub")
         self.JWT_ACCESS_TOKEN_EXPIRATION = 15 # minutes
         self.JWT_REFRESH_TOKEN_EXPIRATION = 10080 # 10080 minutes = 1 week
         self.GRPC_ADDR = os.getenv("GRPC_ADDR", "0.0.0.0:50051")
