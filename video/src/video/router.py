@@ -25,7 +25,7 @@ async def get_user_videos(user: UserDep, db: SessionDep):
     user_videos = await get_all_user_videos(owner_id=user.id, db=db)
     return user_videos
 
-@router.delete('/delete/{video_uuid}', status_code=status.HTTP_204_NO_CONTENT)
+@router.delete('/{video_uuid}', status_code=status.HTTP_204_NO_CONTENT)
 async def delete_video(video_uuid: UUID, user: UserDep, db: SessionDep):
     try:
         await delete_user_video(video_uuid, user, db)

@@ -12,7 +12,7 @@ export async function getUserVideos(): Promise<UserVideoResponse[]> {
 }
 
 export async function deleteUserVideo(id: string): Promise<void> {
-    const response = await authFetch(`/video/delete/${id}`, {
+    const response = await authFetch(`/video/${id}`, {
         method: 'DELETE',
     });
 
