@@ -25,7 +25,7 @@ async def get_user_videos(user: UserDep, db: SessionDep):
     user_videos = await get_all_user_videos(owner_id=user.id, db=db)
     return user_videos
 
-@router.delete('/video/delete/{video_uuid}')
+@router.delete('/delete/{video_uuid}', status_code=status.HTTP_204_NO_CONTENT)
 async def delete_video(video_uuid: UUID, user: UserDep, db: SessionDep):
     try:
         await delete_user_video(video_uuid, user, db)
@@ -33,3 +33,4 @@ async def delete_video(video_uuid: UUID, user: UserDep, db: SessionDep):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
     except ForbiddenError as e:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(e))
+    return None
