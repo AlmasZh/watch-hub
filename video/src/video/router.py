@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Response
 from uuid import UUID
 
 from src.database import SessionDep
@@ -33,4 +33,4 @@ async def delete_video(video_uuid: UUID, user: UserDep, db: SessionDep):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
     except ForbiddenError as e:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(e))
-    return None
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
