@@ -33,12 +33,6 @@ export default function VideoPlayerModal({ isOpen, onClose, streamUrl, title }: 
 
     if (!mounted || !isOpen) return null;
 
-    const s3Url = process.env.NEXT_PUBLIC_S3_URL || "";
-    // Avoid double slashes or missing slashes between endpoint and streamUrl
-    const cleanStreamUrl = streamUrl.startsWith("/") ? streamUrl.slice(1) : streamUrl;
-    const cleanS3Url = s3Url.endsWith("/") ? s3Url : s3Url + "/";
-    const fullUrl = `${cleanS3Url}${cleanStreamUrl}`;
-
     return (
         <div
             className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
@@ -59,7 +53,7 @@ export default function VideoPlayerModal({ isOpen, onClose, streamUrl, title }: 
                 </div>
                 <div className="relative w-full aspect-video bg-black">
                     <video
-                        src={fullUrl}
+                        src={streamUrl}
                         controls
                         autoPlay
                         className="w-full h-full object-contain"

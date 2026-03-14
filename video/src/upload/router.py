@@ -7,6 +7,7 @@ from .dependencies import StorageClientDep
 from ..auth.dependencies import UserDep
 from ..video.models import UserVideo
 from ..database import SessionDep
+from ..config import settings
 
 
 router = APIRouter(prefix="/upload", tags=["upload"])
@@ -60,7 +61,7 @@ async def complete_multipart_upload(
         original_file_name=request.filename,
         storage_key=request.file_key,
         duration_seconds=request.duration_seconds,
-        stream_url=request.file_key, # just for testing, must be changed in future
+        stream_url=settings.stream_url_prefix + request.file_key,
         thumbnail_url="", # TODO: set thumbnail_url after thumbnail generation pipeline is implemented
     )
     db.add(video)
