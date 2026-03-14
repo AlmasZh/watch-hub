@@ -69,9 +69,33 @@ export default function LibraryPage() {
     };
 
     const handleCopyLink = (id: string) => {
-        // Mock copy
-        navigator.clipboard.writeText(`http://wt.com/watch/${id}`);
-        alert("Link copied to clipboard!");
+        const video = videos.find(v => v.id === id);
+        if (video?.streamUrl) {
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(video.streamUrl)
+                    .then(() => alert("Link copied to clipboard!"))
+                    .catch(() => alert("Failed to copy link."));
+            } else {
+                // Fallback for insecure contexts (like HTTP)
+                const textArea = document.createElement("textarea");
+                textArea.value = video.streamUrl;
+                textArea.style.position = "absolute";
+                textArea.style.left = "-999999px";
+                document.body.prepend(textArea);
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    alert("Link copied to clipboard!");
+                } catch (error) {
+                    console.error("Fallback copy failed", error);
+                    alert("Failed to copy link.");
+                } finally {
+                    textArea.remove();
+                }
+            }
+        } else {
+            alert("Failed to copy link: Stream URL not found.");
+        }
     };
 
     const handlePlay = (id: string) => {
