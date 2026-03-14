@@ -58,7 +58,7 @@ export default function Sidebar() {
                     )}
                     title="Home / Catalog"
                 >
-                    WT
+                    WH
                 </Link>
             </div>
 
