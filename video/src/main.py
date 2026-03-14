@@ -12,8 +12,8 @@ from .auth.auth_client import auth_grpc_client
 origins = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
-    "http://wh.com",
-    "https://wh.com",
+    "http://wh.com", "https://wh.com",
+    "http://www.wh.com", "https://www.wh.com",
 ]
 prefix = settings.api_prefix
 
