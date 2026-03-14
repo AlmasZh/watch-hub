@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { getUserVideos } from "@/api/video/user-videos";
+import { getUserVideos, deleteUserVideo } from "@/api/video/user-videos";
 import VideoTable, { Video } from "@/components/library/VideoTable";
 import UppyUploader from "@/components/library/UppyUploader";
 import VideoPlayerModal from "@/components/library/VideoPlayerModal";
@@ -56,9 +56,15 @@ export default function LibraryPage() {
         ]);
     };
 
-    const handleDeleteVideo = (id: string) => {
+    const handleDeleteVideo = async (id: string) => {
         if (confirm("Are you sure you want to delete this video?")) {
-            setVideos((prev) => prev.filter((v) => v.id !== id));
+            try {
+                await deleteUserVideo(id);
+                setVideos((prev) => prev.filter((v) => v.id !== id));
+            } catch (error) {
+                console.error("Failed to delete video", error);
+                alert("Failed to delete video. Please try again later.");
+            }
         }
     };
 
