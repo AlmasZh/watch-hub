@@ -1,99 +1,59 @@
 "use client";
 
-import { useState } from "react";
-import UploadZone from "@/components/library/UploadZone";
-import ProcessingList, { ProcessingItem } from "@/components/library/ProcessingList";
+import { useState, useEffect } from "react";
+import { getUserVideos } from "@/api/video/user-videos";
 import VideoTable, { Video } from "@/components/library/VideoTable";
-import { v4 as uuidv4 } from "uuid";
+import UppyUploader from "@/components/library/UppyUploader";
+import VideoPlayerModal from "@/components/library/VideoPlayerModal";
+import { UploadCompleteResponse } from "@/types/video/upload";
 
-// Mock Data
-const INITIAL_VIDEOS = [
-    {
-        id: "1",
-        title: "My Gaming Highlight Reel 2024",
-        thumbnail: "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2670&auto=format&fit=crop",
-        duration: "10:24",
-        createdAt: new Date("2024-02-01"),
-        size: "1.2 GB"
-    },
-    {
-        id: "2",
-        title: "Vacation Vlog - Japan",
-        thumbnail: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?q=80&w=2670&auto=format&fit=crop",
-        duration: "45:12",
-        createdAt: new Date("2024-01-15"),
-        size: "4.5 GB"
-    },
-    {
-        id: "3",
-        title: "Project Demo Recording",
-        thumbnail: "https://images.unsplash.com/photo-1587620962725-abab7fe55159?q=80&w=2531&auto=format&fit=crop",
-        duration: "05:30",
-        createdAt: new Date("2024-03-10"),
-        size: "350 MB"
-    },
-];
+function formatDuration(seconds: number): string {
+    const m = Math.floor(seconds / 60);
+    const s = Math.floor(seconds % 60);
+    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+}
 
 export default function LibraryPage() {
-    const [processingItems, setProcessingItems] = useState<ProcessingItem[]>([]);
-    const [videos, setVideos] = useState<Video[]>(INITIAL_VIDEOS);
+    const [videos, setVideos] = useState<Video[]>([]);
+    const [playingVideo, setPlayingVideo] = useState<Video | null>(null);
 
-    const handleFileSelect = (files: FileList | null) => {
-        if (!files) return;
+    useEffect(() => {
+        const fetchVideos = async () => {
+            try {
+                const data = await getUserVideos();
+                const formattedVideos: Video[] = data.map((v) => ({
+                    id: v.id,
+                    title: v.originalFileName,
+                    thumbnail: v.thumbnailUrl || "https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=2574&auto=format&fit=crop",
+                    duration: formatDuration(v.durationSeconds),
+                    streamUrl: v.streamUrl,
+                    createdAt: new Date(v.createdAt),
+                    size: "N/A"
+                }));
+                // Sort by recent by default
+                formattedVideos.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+                setVideos(formattedVideos);
+            } catch (error) {
+                console.error("Failed to fetch videos", error);
+            }
+        };
 
-        const newItems: ProcessingItem[] = Array.from(files).map((file) => ({
-            id: uuidv4(),
-            name: file.name,
-            progress: 0,
-            status: "uploading",
-            size: (file.size / (1024 * 1024)).toFixed(2) + " MB",
-            timeLeft: "2 min remaining"
-        }));
+        fetchVideos();
+    }, []);
 
-        setProcessingItems((prev) => [...prev, ...newItems]);
-
-        // Simulate upload progress
-        newItems.forEach((item) => {
-            let progress = 0;
-            const interval = setInterval(() => {
-                progress += Math.random() * 10;
-                if (progress >= 100) {
-                    progress = 100;
-                    clearInterval(interval);
-                    setProcessingItems((prev) =>
-                        prev.map((i) =>
-                            i.id === item.id ? { ...i, progress: 100, status: "completed", timeLeft: "Done" } : i
-                        )
-                    );
-
-                    // Add to video list after "processing"
-                    setTimeout(() => {
-                        const newVideo: Video = {
-                            id: item.id,
-                            title: item.name,
-                            thumbnail: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=2574&auto=format&fit=crop", // placeholder
-                            duration: "00:00",
-                            createdAt: new Date(),
-                            size: item.size
-                        };
-                        setVideos(prev => [newVideo, ...prev]);
-                    }, 1000);
-
-                } else {
-                    setProcessingItems((prev) =>
-                        prev.map((i) => (i.id === item.id ? { ...i, progress: Math.floor(progress) } : i))
-                    );
-                }
-            }, 500);
-        });
-    };
-
-    const handleCancelUpload = (id: string) => {
-        setProcessingItems((prev) => prev.filter((item) => item.id !== id));
-    };
-
-    const handleClearCompleted = () => {
-        setProcessingItems(prev => prev.filter(item => item.status !== 'completed'));
+    const handleUploadSuccess = (videoData: UploadCompleteResponse) => {
+        setVideos((prev) => [
+            {
+                id: videoData.id,
+                title: videoData.originalFileName,
+                thumbnail: videoData.thumbnailUrl || "https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=2574&auto=format&fit=crop",
+                duration: formatDuration(videoData.durationSeconds || 0),
+                streamUrl: videoData.streamUrl,
+                createdAt: new Date(videoData.createdAt),
+                size: "N/A",
+            },
+            ...prev
+        ]);
     };
 
     const handleDeleteVideo = (id: string) => {
@@ -104,12 +64,16 @@ export default function LibraryPage() {
 
     const handleCopyLink = (id: string) => {
         // Mock copy
-        navigator.clipboard.writeText(`https://watchtogether.com/watch/${id}`);
+        navigator.clipboard.writeText(`http://wt.com/watch/${id}`);
         alert("Link copied to clipboard!");
     };
 
     const handlePlay = (id: string) => {
         console.log(`Playing video ${id}`);
+        const video = videos.find(v => v.id === id);
+        if (video) {
+            setPlayingVideo(video);
+        }
     };
 
     return (
@@ -120,15 +84,7 @@ export default function LibraryPage() {
                     <p className="text-gray-400">Manage your uploaded videos and recordings.</p>
                 </header>
 
-                {/* Upload Zone */}
-                <UploadZone onFileSelect={handleFileSelect} />
-
-                {/* Processing List */}
-                <ProcessingList
-                    items={processingItems}
-                    onCancel={handleCancelUpload}
-                    onClearCompleted={handleClearCompleted}
-                />
+                <UppyUploader onUploadSuccess={handleUploadSuccess} />
 
                 {/* Video Table */}
                 <VideoTable
@@ -136,6 +92,14 @@ export default function LibraryPage() {
                     onPlay={handlePlay}
                     onDelete={handleDeleteVideo}
                     onCopyLink={handleCopyLink}
+                />
+
+                {/* Video Player Modal */}
+                <VideoPlayerModal
+                    isOpen={!!playingVideo}
+                    onClose={() => setPlayingVideo(null)}
+                    streamUrl={playingVideo?.streamUrl || ""}
+                    title={playingVideo?.title || ""}
                 />
             </div>
         </div>

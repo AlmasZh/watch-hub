@@ -1,6 +1,8 @@
 from typing import Any
 from pydantic import BaseModel, ConfigDict, Field
 from pydantic.alias_generators import to_camel
+from datetime import datetime
+from uuid import UUID
 
 
 class UploadStartRequest(BaseModel):
@@ -28,5 +30,18 @@ class UploadCompleteRequest(BaseModel):
     
     filename: str
     file_key: str
+    duration_seconds: int = Field(ge=0)
     upload_id: str
     parts: list[PartInfo]
+
+class UploadCompleteResponse(BaseModel):
+    model_config = ConfigDict(alias_generator=to_camel, validate_by_alias=True, validate_by_name=True, from_attributes=True)
+
+    id: UUID
+    stream_url: str
+    thumbnail_url: str | None = None
+    duration_seconds: int
+    original_file_name: str
+    
+    created_at: datetime            
+    updated_at: datetime
