@@ -70,7 +70,7 @@ export default function RegisterPage() {
                         Create an account
                     </h2>
                     <p className="mt-2 text-sm text-gray-400">
-                        Join us and start watching together!
+                        Join us and start watching!
                     </p>
                 </div>
 

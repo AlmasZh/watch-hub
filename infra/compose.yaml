@@ -1,10 +1,10 @@
-name: watch-together
+name: watch-hub
 
 services:
   nginx:
     image: nginx
     networks:
-      - wt-internal
+      - wh-internal
     restart: 'unless-stopped'
     ports: 
     - "80:80"
@@ -35,7 +35,7 @@ services:
     volumes:
       - ./scripts/init_sql.sh:/docker-entrypoint-initdb.d/init-user-db.sh
     networks:
-      - wt-internal
+      - wh-internal
 
   auth:
     build:
@@ -65,7 +65,7 @@ services:
       retries: 5
       start_period: 30s
     networks:
-      - wt-internal
+      - wh-internal
     depends_on: 
       db:
         condition: service_healthy
@@ -93,7 +93,7 @@ services:
       - jwt_public
       - db_password
     networks:
-      - wt-internal
+      - wh-internal
     depends_on:
       auth:
         condition: service_healthy
@@ -116,7 +116,7 @@ services:
     secrets:
       - jwt_public
     networks:
-      - wt-internal
+      - wh-internal
 
   localstack:
     image: localstack/localstack-pro:latest
@@ -136,7 +136,7 @@ services:
       - "./scripts/init_localstack.sh:/etc/localstack/init/ready.d/init_s3.sh:ro"
       - "./config/cors-config.json:/tmp/cors-config.json:ro"
     networks:
-      wt-internal:
+      wh-internal:
         aliases:
           - s3.localhost.localstack.cloud
           - localhost.localstack.cloud
@@ -151,4 +151,4 @@ secrets:
     file: ./secrets/jwt_public.pem
 
 networks:
-  wt-internal:
+  wh-internal:

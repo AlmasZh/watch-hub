@@ -12,8 +12,8 @@ from .auth.grpc_server import start_grpc_server
 origins = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
-    "http://wt.com",
-    "https://wt.com",
+    "http://wh.com", "https://wh.com",
+    "http://www.wh.com", "https://www.wh.com",
 ]
 prefix = settings.API_PREFIX
 

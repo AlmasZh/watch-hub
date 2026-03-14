@@ -19,7 +19,7 @@ class Settings(BaseSettings):
     
     jwt_public: SecretStr
     jwt_algorithm: str = "RS256"
-    jwt_issuer: str = "watch-together"
+    jwt_issuer: str = "watch-hub"
 
     s3_bucket_name: str
     aws_access_key_id: str
@@ -29,7 +29,7 @@ class Settings(BaseSettings):
     s3_force_path_style: bool | None = None
 
     grpc_addr: str = "auth:50051"
-    auth_addr: str = "http://wt.com/api/auth"
+    auth_addr: str = "http://wh.com/api/auth"
 
     api_prefix: str = "/api/video"
     app_env: Literal["dev", "test", "prod"] = "prod"
