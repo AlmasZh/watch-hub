@@ -73,14 +73,6 @@ export default function Home() {
   //     : movies.filter((movie) => movie.genres.includes(selectedCategory));
   const filteredVideos = movies;
 
-  const handleWatchAlone = (id: string) => {
-    router.push(`/watch/${id}`);
-  };
-
-  const handleCreateParty = (title: string) => {
-    console.log(`Creating party for ${title}`);
-  };
-
   const handleVideoClick = (id: string) => {
     router.push(`/watch/${id}`);
   };
@@ -135,8 +127,6 @@ export default function Home() {
                 duration={formatDuration(movie.durationSeconds)}
                 views={`${movie.rating}/10`}
                 onClick={() => handleVideoClick(movie.id)}
-                onWatchAlone={() => handleWatchAlone(movie.id)}
-                onCreateParty={() => handleCreateParty(movie.title)}
               />
             ))}
           </div>

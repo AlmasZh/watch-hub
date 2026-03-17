@@ -8,8 +8,6 @@ import {
     Plus,
     Settings,
     LogOut,
-    MessageCircle,
-    Users,
     Video,
     Upload,
     PlusCircle,
@@ -18,7 +16,6 @@ import {
     User,
     ChevronDown,
     Search,
-    UserPlus,
     X,
     Check
 } from "lucide-react";
@@ -103,10 +100,6 @@ export default function Sidebar() {
                     {isPlusMenuOpen && (
                         <div className="absolute left-16 top-0 w-48 bg-[#111214] border border-[#1e1f22] rounded-md shadow-2xl py-2 z-50 animate-in fade-in slide-in-from-left-2 duration-200">
                             <button className="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-300 hover:bg-[#35373c] hover:text-white transition-colors">
-                                <Users size={18} className="text-blue-400" />
-                                <span>New Group</span>
-                            </button>
-                            <button className="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-300 hover:bg-[#35373c] hover:text-white transition-colors">
                                 <Upload size={18} className="text-green-400" />
                                 <span>Upload Video</span>
                             </button>
@@ -128,7 +121,6 @@ export default function Sidebar() {
                 {/* User Avatar */}
                 <div className="relative group cursor-pointer">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-yellow-400 to-red-500 border-2 border-[#1e1f22] ring-2 ring-transparent group-hover:ring-blue-500" />
-                    <span className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-green-500 border-[2px] border-[#1e1f22]" title="Online" />
                 </div>
             </div>
         </div>
