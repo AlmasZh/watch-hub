@@ -3,21 +3,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-    Home,
     Library,
     Plus,
     Settings,
     LogOut,
-    Video,
     Upload,
-    PlusCircle,
-    MoreHorizontal,
-    Bell,
-    User,
-    ChevronDown,
-    Search,
-    X,
-    Check
 } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { clsx, type ClassValue } from "clsx";

@@ -1,4 +1,4 @@
-import { Play, Users, Clock, Eye } from 'lucide-react';
+import { Play, Clock, Eye } from 'lucide-react';
 import Image from 'next/image';
 
 interface VideoCardProps {
