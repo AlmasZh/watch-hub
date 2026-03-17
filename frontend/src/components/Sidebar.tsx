@@ -86,24 +86,6 @@ export default function Sidebar() {
                     )} />
                 </Link>
 
-                {/* Chats Link (NEW) */}
-                <Link
-                    href="/chats"
-                    className={cn(
-                        "group relative flex items-center justify-center w-12 h-12 rounded-[24px] transition-all duration-200 hover:rounded-[15px] hover:bg-green-500",
-                        (pathname.startsWith("/chats") || pathname.startsWith("/watch")) ? "rounded-[15px] bg-green-500 text-white" : "bg-[#313338] text-gray-400 hover:text-white"
-                    )}
-                    title="Chats"
-                >
-                    <MessageCircle size={24} />
-                    {/* Selection Indicator */}
-                    <div className={cn(
-                        "absolute -left-3 top-1/2 -translate-y-1/2 w-1.5 bg-white rounded-r-full transition-all duration-200",
-                        (pathname.startsWith("/chats") || pathname.startsWith("/watch")) ? "h-10" : "h-0 group-hover:h-5"
-                    )} />
-                </Link>
-
-
                 {/* The Plus Action */}
                 <div className="relative mt-2" ref={plusMenuRef}>
                     <button
