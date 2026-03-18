@@ -2,7 +2,6 @@ import { Play, Clock, Eye } from 'lucide-react';
 import Image from 'next/image';
 
 interface VideoCardProps {
-    id: string;
     title: string;
     thumbnail: string;
     duration: string;
@@ -11,7 +10,6 @@ interface VideoCardProps {
 }
 
 export default function VideoCard({
-    id,
     title,
     thumbnail,
     duration,

@@ -121,7 +121,6 @@ export default function Home() {
             {filteredVideos.map((movie) => (
               <VideoCard
                 key={movie.id}
-                id={movie.id}
                 title={movie.title}
                 thumbnail={movie.thumbnailUrl}
                 duration={formatDuration(movie.durationSeconds)}
