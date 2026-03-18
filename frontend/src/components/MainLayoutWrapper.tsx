@@ -14,7 +14,7 @@ export default function MainLayoutWrapper({
     children: React.ReactNode;
 }) {
     const pathname = usePathname();
-    const isFullWidthPage = pathname.startsWith("/chats") || pathname.startsWith("/watch");
+    const isFullWidthPage = pathname.startsWith("/watch");
 
     return (
         <main

@@ -3,24 +3,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-    Home,
     Library,
     Plus,
     Settings,
     LogOut,
-    MessageCircle,
-    Users,
-    Video,
     Upload,
-    PlusCircle,
-    MoreHorizontal,
-    Bell,
-    User,
-    ChevronDown,
-    Search,
-    UserPlus,
-    X,
-    Check
 } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { clsx, type ClassValue } from "clsx";
@@ -86,24 +73,6 @@ export default function Sidebar() {
                     )} />
                 </Link>
 
-                {/* Chats Link (NEW) */}
-                <Link
-                    href="/chats"
-                    className={cn(
-                        "group relative flex items-center justify-center w-12 h-12 rounded-[24px] transition-all duration-200 hover:rounded-[15px] hover:bg-green-500",
-                        (pathname.startsWith("/chats") || pathname.startsWith("/watch")) ? "rounded-[15px] bg-green-500 text-white" : "bg-[#313338] text-gray-400 hover:text-white"
-                    )}
-                    title="Chats"
-                >
-                    <MessageCircle size={24} />
-                    {/* Selection Indicator */}
-                    <div className={cn(
-                        "absolute -left-3 top-1/2 -translate-y-1/2 w-1.5 bg-white rounded-r-full transition-all duration-200",
-                        (pathname.startsWith("/chats") || pathname.startsWith("/watch")) ? "h-10" : "h-0 group-hover:h-5"
-                    )} />
-                </Link>
-
-
                 {/* The Plus Action */}
                 <div className="relative mt-2" ref={plusMenuRef}>
                     <button
@@ -120,10 +89,6 @@ export default function Sidebar() {
                     {/* Plus Action Overlay Menu */}
                     {isPlusMenuOpen && (
                         <div className="absolute left-16 top-0 w-48 bg-[#111214] border border-[#1e1f22] rounded-md shadow-2xl py-2 z-50 animate-in fade-in slide-in-from-left-2 duration-200">
-                            <button className="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-300 hover:bg-[#35373c] hover:text-white transition-colors">
-                                <Users size={18} className="text-blue-400" />
-                                <span>New Group</span>
-                            </button>
                             <button className="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-300 hover:bg-[#35373c] hover:text-white transition-colors">
                                 <Upload size={18} className="text-green-400" />
                                 <span>Upload Video</span>
@@ -146,7 +111,6 @@ export default function Sidebar() {
                 {/* User Avatar */}
                 <div className="relative group cursor-pointer">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-yellow-400 to-red-500 border-2 border-[#1e1f22] ring-2 ring-transparent group-hover:ring-blue-500" />
-                    <span className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-green-500 border-[2px] border-[#1e1f22]" title="Online" />
                 </div>
             </div>
         </div>
