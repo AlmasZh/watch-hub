@@ -24,6 +24,7 @@ export async function middleware(request: NextRequest) {
 
     return NextResponse.next();
   } catch (error) {
+    console.log("middleware error", error);
     const response = NextResponse.redirect(new URL('/login', request.url));
     response.cookies.delete('refresh_token');
     return response;
