@@ -1,7 +1,7 @@
 "use client";
 
 import { X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 interface VideoPlayerModalProps {
     isOpen: boolean;
@@ -11,12 +11,6 @@ interface VideoPlayerModalProps {
 }
 
 export default function VideoPlayerModal({ isOpen, onClose, streamUrl, title }: VideoPlayerModalProps) {
-    const [mounted, setMounted] = useState(false);
-
-    useEffect(() => {
-        setMounted(true);
-    }, []);
-
     useEffect(() => {
         const handleEsc = (e: KeyboardEvent) => {
             if (e.key === "Escape") onClose();
@@ -31,7 +25,7 @@ export default function VideoPlayerModal({ isOpen, onClose, streamUrl, title }: 
         };
     }, [isOpen, onClose]);
 
-    if (!mounted || !isOpen) return null;
+    if (!isOpen) return null;
 
     return (
         <div
