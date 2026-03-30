@@ -13,7 +13,7 @@ export const setAccessToken = (token: string) => {
   accessToken = token;
 };
 
-const isFormData = (body: any): body is FormData => {
+const isFormData = (body: unknown): body is FormData => {
   return typeof FormData !== 'undefined' && body instanceof FormData;
 };
 
