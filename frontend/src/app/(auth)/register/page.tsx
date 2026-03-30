@@ -49,10 +49,8 @@ export default function RegisterPage() {
         e.preventDefault();
         setAuthError(null);
         // TODO: Implement registration logic
-        console.log('Registering with:', formData);
         const errors = verifyRegistrationForm(formData);
         if (Object.keys(errors).length > 0) {
-            console.log('Errors:', errors);
             setAuthError(Object.values(errors)[0] as string);
             return;
         }
