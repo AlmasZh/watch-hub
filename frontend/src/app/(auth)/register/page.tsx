@@ -34,7 +34,7 @@ export default function RegisterPage() {
                 }
             };
             checkAuth();
-        }, []
+        }, [router]
     )
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -58,9 +58,9 @@ export default function RegisterPage() {
         }
 
         try {
-            const response = await register(formData);
+            await register(formData);
             router.push('/');
-        } catch (error: any) {
+        } catch (error) {
             console.error('Registration failed:', error);
             setAuthError('Registration failed. Please check your details and try again.');
         }
