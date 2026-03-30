@@ -14,13 +14,17 @@ export function SidebarProvider({ children }: { children: React.ReactNode }) {
 
     // Optional: Persist state to local storage
     useEffect(() => {
-        const timer = setTimeout(() => {
-            const saved = localStorage.getItem("sidebar-expanded");
-            if (saved !== null) {
-                setIsExpanded(saved === "true");
-            }
-        }, 0);
-        return () => clearTimeout(timer);
+        // const timer = setTimeout(() => {
+        //     const saved = localStorage.getItem("sidebar-expanded");
+        //     if (saved !== null) {
+        //         setIsExpanded(saved === "true");
+        //     }
+        // }, 0);
+        // return () => clearTimeout(timer);
+        const saved = localStorage.getItem("sidebar-expanded");
+        if (saved !== null) {
+            setIsExpanded(saved === "true");
+        }
     }, []);
 
     const toggleSidebar = () => {
