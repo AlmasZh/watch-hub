@@ -17,6 +17,7 @@ export default function RegisterPage() {
         dateOfBirth: '',
         password: '',
     });
+    const [authError, setAuthError] = useState<string | null>(null);
     const router = useRouter();
 
     useEffect(
@@ -33,7 +34,7 @@ export default function RegisterPage() {
                 }
             };
             checkAuth();
-        }, []
+        }, [router]
     )
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -46,19 +47,20 @@ export default function RegisterPage() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setAuthError(null);
         // TODO: Implement registration logic
-        console.log('Registering with:', formData);
         const errors = verifyRegistrationForm(formData);
         if (Object.keys(errors).length > 0) {
-            console.log('Errors:', errors);
+            setAuthError(Object.values(errors)[0] as string);
             return;
         }
-        
+
         try {
-            const response = await register(formData);
+            await register(formData);
             router.push('/');
         } catch (error) {
             console.error('Registration failed:', error);
+            setAuthError('Registration failed. Please check your details and try again.');
         }
     };
 
@@ -75,6 +77,11 @@ export default function RegisterPage() {
                 </div>
 
                 <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
+                    {authError && (
+                        <div className="rounded-md bg-red-500/10 p-3 outline outline-1 outline-red-500/20">
+                            <p className="text-sm font-medium text-red-400">{authError}</p>
+                        </div>
+                    )}
                     <div>
                         <label htmlFor="email" className="block text-xs font-bold uppercase leading-6 text-gray-400">
                             Email

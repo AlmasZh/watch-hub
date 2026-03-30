@@ -25,7 +25,6 @@ import {
     Minimize,
     Settings,
     Check,
-    ChevronRight,
 } from "lucide-react";
 
 interface VideoPlayerProps {
