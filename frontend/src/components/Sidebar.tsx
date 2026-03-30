@@ -4,12 +4,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
     Library,
-    Plus,
     Settings,
     LogOut,
-    Upload,
 } from "lucide-react";
-import { useState, useRef, useEffect } from "react";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -19,19 +16,6 @@ function cn(...inputs: ClassValue[]) {
 
 export default function Sidebar() {
     const pathname = usePathname();
-    const [isPlusMenuOpen, setIsPlusMenuOpen] = useState(false);
-    const plusMenuRef = useRef<HTMLDivElement>(null);
-
-    // Close menu when clicking outside
-    useEffect(() => {
-        function handleClickOutside(event: MouseEvent) {
-            if (plusMenuRef.current && !plusMenuRef.current.contains(event.target as Node)) {
-                setIsPlusMenuOpen(false);
-            }
-        }
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, []);
 
     return (
         <div className="fixed left-0 top-0 z-40 h-screen flex flex-col bg-[#1e1f22] border-r border-[#1e1f22] w-[72px] transition-all duration-300 ease-in-out">
@@ -72,30 +56,6 @@ export default function Sidebar() {
                         pathname === "/library" ? "h-10" : "h-0 group-hover:h-5"
                     )} />
                 </Link>
-
-                {/* The Plus Action */}
-                <div className="relative mt-2" ref={plusMenuRef}>
-                    <button
-                        onClick={() => setIsPlusMenuOpen(!isPlusMenuOpen)}
-                        className={cn(
-                            "flex items-center justify-center w-12 h-12 rounded-[24px] transition-all duration-200 bg-[#313338] text-green-500 hover:rounded-[15px] hover:bg-green-500 hover:text-white shadow-lg",
-                            isPlusMenuOpen && "rounded-[15px] bg-green-500 text-white"
-                        )}
-                        title="Add..."
-                    >
-                        <Plus size={24} />
-                    </button>
-
-                    {/* Plus Action Overlay Menu */}
-                    {isPlusMenuOpen && (
-                        <div className="absolute left-16 top-0 w-48 bg-[#111214] border border-[#1e1f22] rounded-md shadow-2xl py-2 z-50 animate-in fade-in slide-in-from-left-2 duration-200">
-                            <button className="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-300 hover:bg-[#35373c] hover:text-white transition-colors">
-                                <Upload size={18} className="text-green-400" />
-                                <span>Upload Video</span>
-                            </button>
-                        </div>
-                    )}
-                </div>
             </div>
 
             {/* Bottom Section */}
