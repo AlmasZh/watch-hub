@@ -52,7 +52,7 @@ export default function LoginPage() {
                         Welcome back!
                     </h2>
                     <p className="mt-2 text-sm text-gray-400">
-                        We're so excited to see you again!
+                        We&apos;re so excited to see you again!
                     </p>
                 </div>
 
