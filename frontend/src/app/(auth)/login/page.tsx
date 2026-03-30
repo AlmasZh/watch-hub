@@ -9,17 +9,20 @@ import { authFetch } from '@/api/fetch-client';
 export default function LoginPage() {
     const [identifier, setIdentifier] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState<string | null>(null);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setError(null);
         try {
             const formData = new URLSearchParams();
             formData.append('username', identifier);
             formData.append('password', password);
-            const response = await login(formData);
+            await login(formData);
             router.push('/');
-        } catch (error) {
-            console.error('Login failed:', error);
+        } catch (err) {
+            console.error('Login failed:', err);
+            setError('Invalid username or password.');
         }
     };
     const router = useRouter();
@@ -54,6 +57,11 @@ export default function LoginPage() {
                 </div>
 
                 <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+                    {error && (
+                        <div className="rounded-md bg-red-500/10 p-3 outline outline-1 outline-red-500/20">
+                            <p className="text-sm font-medium text-red-400">{error}</p>
+                        </div>
+                    )}
                     <div className="space-y-5">
                         <div>
                             <label htmlFor="identifier" className="block text-xs font-bold uppercase leading-6 text-gray-400">
