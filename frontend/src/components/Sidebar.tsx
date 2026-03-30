@@ -38,7 +38,7 @@ export default function Sidebar() {
             </div>
 
             {/* Middle Action Icons */}
-            <div className="flex flex-col gap-2 flex-1 overflow-y-auto no-scrollbar scroll-x-none py-2 px-3">
+            <div className="flex flex-col gap-2 flex-1 overflow-y-auto overflow-x-hidden no-scrollbar py-2 px-3">
 
                 {/* Library Icon */}
                 <Link
