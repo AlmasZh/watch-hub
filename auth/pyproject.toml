@@ -1,0 +1,16 @@
+[tool.ruff]
+lint.select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort (import sorting)
+    "B",   # flake8-bugbear (common bugs)
+    "C4",  # flake8-comprehensions
+    "UP",  # pyupgrade (modernize syntax)
+    "ARG", # flake8-unused-arguments
+]
+lint.ignore = ["E501"] # Ignore line length if you let the formatter handle it
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
