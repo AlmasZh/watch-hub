@@ -19,3 +19,32 @@ exclude = [
 [tool.ruff.format]
 quote-style = "double"
 indent-style = "space"
+
+[tool.mypy]
+python_executable = ".venv/bin/python"
+python_version = "3.12"
+mypy_path = "src"
+explicit_package_bases = true
+files = ["src"] 
+
+# --- Strictness rules ---
+check_untyped_defs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_return_any = true
+strict_optional = true
+
+# --- Ignore missing imports for third-party libraries without stubs ---
+[[tool.mypy.overrides]]
+module = [
+    "grpc.*",
+    # Add other untyped libraries here (e.g., "jose.*", "passlib.*")
+]
+ignore_missing_imports = true
+
+# --- Ignore auto-generated gRPC code ---
+[[tool.mypy.overrides]]
+module = "grpc_gen.*"
+ignore_errors = true
