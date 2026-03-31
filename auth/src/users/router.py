@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from src.auth.dependencies import UserDep
+from auth.dependencies import UserDep
 
 from .schemas import UserResponse
 

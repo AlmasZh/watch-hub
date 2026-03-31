@@ -2,11 +2,11 @@ import grpc
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.auth.utils import get_current_token_payload_grpc
-from src.config import settings
-from src.database import new_session
-from src.grpc_gen.auth_service import auth_pb2, auth_pb2_grpc
-from src.users.models import User
+from auth.utils import get_current_token_payload_grpc
+from config import settings
+from database import new_session
+from grpc_gen.auth_service import auth_pb2, auth_pb2_grpc
+from users.models import User
 
 from .exceptions import TokenExpiredError, TokenInvalidError
 
