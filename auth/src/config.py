@@ -6,7 +6,7 @@ load_dotenv()
 
 
 class Settings:
-    def __init__(self):
+    def __init__(self) -> None:
         self.DB_SCHEME = os.getenv("DB_SCHEME")
         self.DB_USER = os.getenv("DB_USER")
         self.DB_HOST = os.getenv("DB_HOST")
@@ -32,14 +32,14 @@ class Settings:
 
         self._validate_config()
 
-    def _get_secret(self, secret_name):
+    def _get_secret(self, secret_name: str) -> str | None:
         try:
             with open(f"/run/secrets/{secret_name}") as f:
                 return f.read().strip()
         except OSError:
             return None
 
-    def _validate_config(self):
+    def _validate_config(self) -> None:
         checks = {
             "DB_SCHEME": self.DB_SCHEME,
             "DB_HOST": self.DB_HOST,
@@ -57,7 +57,7 @@ class Settings:
             )
 
     @property
-    def DB_URL(self):
+    def DB_URL(self) -> str:
         return f"{self.DB_SCHEME}://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
 
 
