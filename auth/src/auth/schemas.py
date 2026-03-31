@@ -23,7 +23,7 @@ class UserBase(BaseModel):
         Field(min_length=2, max_length=50, examples=["almas"]),
         AfterValidator(username_validator),
     ]
-    display_name: str = Field(min_length=2, max_length=50, default=None)
+    display_name: str | None = Field(min_length=2, max_length=50, default=None)
     date_of_birth: PastDate = Field(examples=["2012-12-12"])
 
 
