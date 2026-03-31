@@ -3,9 +3,9 @@ from typing import Annotated
 from fastapi import APIRouter, Cookie, Depends, HTTPException, Response, status
 from fastapi.security.oauth2 import OAuth2PasswordRequestForm
 
-from src.config import settings
-from src.database import SessionDep
-from src.users.schemas import UserResponse
+from config import settings
+from database import SessionDep
+from users.schemas import UserResponse
 
 from .dependencies import UserDep
 from .schemas import AccessTokenResponse, UserRegister

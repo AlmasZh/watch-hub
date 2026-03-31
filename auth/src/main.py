@@ -3,11 +3,11 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .auth.grpc_server import start_grpc_server
-from .auth.router import router as auth_router
-from .config import settings
-from .database import setup_database, teardown_database
-from .users.router import router as users_router
+from auth.grpc_server import start_grpc_server
+from auth.router import router as auth_router
+from config import settings
+from database import setup_database, teardown_database
+from users.router import router as users_router
 
 origins = [
     "http://localhost:3000",

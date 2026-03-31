@@ -5,7 +5,7 @@ from fastapi import HTTPException, status
 from passlib.context import CryptContext
 from pydantic import BaseModel, ConfigDict, ValidationError
 
-from src.config import settings
+from config import settings
 
 from .exceptions import TokenExpiredError, TokenInvalidError
 
