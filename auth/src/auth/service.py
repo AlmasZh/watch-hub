@@ -45,7 +45,7 @@ async def authenticate_user(user: OAuth2PasswordRequestForm, db: AsyncSession) -
     res = await db.execute(stmt)
     selected_user = res.scalar_one_or_none()
 
-    if selected_user is None or not verify_password_hash(
+    if selected_user is None or selected_user.password is None or not verify_password_hash(
         user.password, selected_user.password
     ):
         raise HTTPException(
