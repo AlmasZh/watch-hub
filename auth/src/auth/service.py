@@ -5,6 +5,7 @@ from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.users.models import User
+
 from .schemas import UserRegister
 from .utils import get_password_hash, verify_password_hash
 
