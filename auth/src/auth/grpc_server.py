@@ -2,13 +2,13 @@ import grpc
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.grpc_gen.auth_service import auth_pb2, auth_pb2_grpc
-
-from src.users.models import User
-from src.database import new_session
 from src.auth.utils import get_current_token_payload_grpc
-from .exceptions import TokenExpiredError, TokenInvalidError
 from src.config import settings
+from src.database import new_session
+from src.grpc_gen.auth_service import auth_pb2, auth_pb2_grpc
+from src.users.models import User
+
+from .exceptions import TokenExpiredError, TokenInvalidError
 
 
 class AuthService(auth_pb2_grpc.AuthServiceServicer):
@@ -31,7 +31,7 @@ class AuthService(auth_pb2_grpc.AuthServiceServicer):
         try:
             payload = await get_current_token_payload_grpc(request.token)
         except TokenExpiredError:
-            await context.abort(grpc.StatusCode.UNAUTHENTICATED, details=f"Token has expired")
+            await context.abort(grpc.StatusCode.UNAUTHENTICATED, details="Token has expired")
         except TokenInvalidError:
             await context.abort(grpc.StatusCode.UNAUTHENTICATED, details="Invalid token")
 
@@ -39,15 +39,15 @@ class AuthService(auth_pb2_grpc.AuthServiceServicer):
             user_id = int(payload.sub)
         except (ValueError, TypeError):
             await context.abort(grpc.StatusCode.UNAUTHENTICATED, details="Invalid token subject")
-        
+
         async with new_session() as session:
             user = await self._get_user(session, user_id)
 
             if not user:
-                await context.abort(grpc.StatusCode.UNAUTHENTICATED, details=f"User no longer exists")
+                await context.abort(grpc.StatusCode.UNAUTHENTICATED, details="User no longer exists")
 
             return self._model_to_message(user)
-    
+
     def _model_to_message(self, user: User) -> auth_pb2.UserResponse:
         return auth_pb2.UserResponse(
             id=user.id,

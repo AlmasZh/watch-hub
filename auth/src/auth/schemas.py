@@ -1,6 +1,14 @@
 from typing import Annotated
-from pydantic import BaseModel, EmailStr, Field, AfterValidator, SecretStr, PastDate
-from pydantic import ConfigDict
+
+from pydantic import (
+    AfterValidator,
+    BaseModel,
+    ConfigDict,
+    EmailStr,
+    Field,
+    PastDate,
+    SecretStr,
+)
 from pydantic.alias_generators import to_camel
 
 from .utils import username_validator

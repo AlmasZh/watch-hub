@@ -1,11 +1,12 @@
-import jwt
-from typing import Dict, Any
-from fastapi import HTTPException, status
 from datetime import datetime, timedelta, timezone
+
+import jwt
+from fastapi import HTTPException, status
 from passlib.context import CryptContext
 from pydantic import BaseModel, ConfigDict, ValidationError
 
 from src.config import settings
+
 from .exceptions import TokenExpiredError, TokenInvalidError
 
 
@@ -14,7 +15,7 @@ class TokenPayload(BaseModel):
     iat: int
     exp: int
     iss: str
-    
+
     model_config = ConfigDict(extra="ignore")
 
 def generate_jwt_token(sub: str | int, expires_in_minutes: int):
@@ -38,31 +39,31 @@ def generate_jwt_token(sub: str | int, expires_in_minutes: int):
 def get_current_token_payload(token: str) -> TokenPayload:
     try:
         payload_data = jwt.decode(
-            token, 
+            token,
             key=settings.JWT_PUBLIC_KEY,
             algorithms=["RS256"],
             issuer=settings.JWT_ISSUER,
             options={"require": ["exp", "iss", "sub"]}
         )
-        
+
         return TokenPayload.model_validate(payload_data)
-    except jwt.ExpiredSignatureError:
+    except jwt.ExpiredSignatureError as e:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Token has expired",
             headers={"WWW-Authenticate": "Bearer"}
-        )
-    except (jwt.InvalidTokenError, ValidationError):
+        ) from e
+    except (jwt.InvalidTokenError, ValidationError) as e:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid authentication credentials",
             headers={"WWW-Authenticate": "Bearer"}
-        )
-    except Exception:
+        ) from e
+    except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Internal server error during verification"
-        )
+        ) from e
 
 async def get_current_token_payload_grpc(token: str) -> TokenPayload:
     try:
@@ -74,12 +75,12 @@ async def get_current_token_payload_grpc(token: str) -> TokenPayload:
             options={"require": ["exp", "iss", "sub"]}
         )
         return TokenPayload.model_validate(payload_data)
-    except jwt.ExpiredSignatureError:
-        raise TokenExpiredError("Token has expired")
-    except (jwt.InvalidTokenError, ValidationError):
-        raise TokenInvalidError("Invalid token")
-    except Exception:
-        raise TokenInvalidError("Internal error during token verification")
+    except jwt.ExpiredSignatureError as e:
+        raise TokenExpiredError("Token has expired") from e
+    except (jwt.InvalidTokenError, ValidationError) as e:
+        raise TokenInvalidError("Invalid token") from e
+    except Exception as e:
+        raise TokenInvalidError("Internal error during token verification") from e
 
 def username_validator(value: str):
     if not value:
