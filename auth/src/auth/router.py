@@ -5,6 +5,7 @@ from fastapi.security.oauth2 import OAuth2PasswordRequestForm
 
 from src.config import settings
 from src.database import SessionDep
+from src.users.schemas import UserResponse
 
 from .dependencies import UserDep
 from .schemas import AccessTokenResponse, UserRegister
@@ -14,7 +15,7 @@ from .utils import generate_jwt_token, get_current_token_payload
 router = APIRouter(tags=["auth"])
 
 
-@router.get("/verify")
+@router.get("/verify", response_model=UserResponse)
 async def verify(current_user: UserDep):
     return current_user
 
