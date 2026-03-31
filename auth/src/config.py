@@ -1,5 +1,6 @@
-from dotenv import load_dotenv
 import os
+
+from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -21,19 +22,19 @@ class Settings:
         self.GRPC_ADDR = os.getenv("GRPC_ADDR", "0.0.0.0:50051")
 
         self.USE_SECURE_COOKIES = os.getenv("USE_SECURE_COOKIES", "True").lower() == "true"
-        
+
         self.APP_ENV = os.getenv("APP_ENV")
 
         self.API_PREFIX = "/api/auth"
 
         self._validate_config()
-    
+
     def _get_secret(self, secret_name):
         try:
-            with open(f'/run/secrets/{secret_name}', 'r') as f:
+            with open(f'/run/secrets/{secret_name}') as f:
                 return f.read().strip()
-        except IOError:
-            return None        
+        except OSError:
+            return None
 
     def _validate_config(self):
         checks = {
@@ -49,7 +50,7 @@ class Settings:
 
         if missing:
             raise ValueError(f"Configuration error. Missing values for {', '.join(missing)}")
-    
+
     @property
     def DB_URL(self):
         return f"{self.DB_SCHEME}://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"

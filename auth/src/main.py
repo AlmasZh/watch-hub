@@ -1,13 +1,13 @@
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
-from .database import setup_database, teardown_database
-from .auth.router import router as auth_router
-from .users.router import router as users_router
-from .config import settings
-from .auth.grpc_server import start_grpc_server
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
+from .auth.grpc_server import start_grpc_server
+from .auth.router import router as auth_router
+from .config import settings
+from .database import setup_database, teardown_database
+from .users.router import router as users_router
 
 origins = [
     "http://localhost:3000",
@@ -18,7 +18,7 @@ origins = [
 prefix = settings.API_PREFIX
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(_app: FastAPI):
     await setup_database()
     grpc_server = await start_grpc_server()
     yield
