@@ -41,7 +41,7 @@ def get_current_token_payload(token: str) -> TokenPayload:
         payload_data = jwt.decode(
             token,
             key=settings.JWT_PUBLIC_KEY,
-            algorithms=["RS256"],
+            algorithms=[settings.JWT_ALGORITHM],
             issuer=settings.JWT_ISSUER,
             options={"require": ["exp", "iss", "sub"]},
         )
@@ -71,7 +71,7 @@ async def get_current_token_payload_grpc(token: str) -> TokenPayload:
         payload_data = jwt.decode(
             token,
             key=settings.JWT_PUBLIC_KEY,
-            algorithms=["RS256"],
+            algorithms=[settings.JWT_ALGORITHM],
             issuer=settings.JWT_ISSUER,
             options={"require": ["exp", "iss", "sub"]},
         )
