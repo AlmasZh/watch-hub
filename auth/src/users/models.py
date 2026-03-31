@@ -1,7 +1,8 @@
+from sqlalchemy import Date, String
 from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy import String, Date
 
 from ..models import Base
+
 
 class User(Base):
     __tablename__ = "users"
