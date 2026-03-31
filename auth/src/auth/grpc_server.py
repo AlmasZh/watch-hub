@@ -17,34 +17,49 @@ class AuthService(auth_pb2_grpc.AuthServiceServicer):
         res = await session.execute(stmt)
         return res.scalar_one_or_none()
 
-    async def GetUserById(self, request, context: grpc.aio.ServicerContext) -> auth_pb2.UserResponse:
+    async def GetUserById(
+        self, request, context: grpc.aio.ServicerContext
+    ) -> auth_pb2.UserResponse:
         async with new_session() as session:
             user_id = request.user_id
 
             user = await self._get_user(session, user_id)
             if not user:
-                await context.abort(grpc.StatusCode.NOT_FOUND, details=f"User {request.user_id} not found")
+                await context.abort(
+                    grpc.StatusCode.NOT_FOUND,
+                    details=f"User {request.user_id} not found",
+                )
             message = self._model_to_message(user)
             return message
 
-    async def ValidateToken(self, request, context: grpc.aio.ServicerContext) -> auth_pb2.UserResponse:
+    async def ValidateToken(
+        self, request, context: grpc.aio.ServicerContext
+    ) -> auth_pb2.UserResponse:
         try:
             payload = await get_current_token_payload_grpc(request.token)
         except TokenExpiredError:
-            await context.abort(grpc.StatusCode.UNAUTHENTICATED, details="Token has expired")
+            await context.abort(
+                grpc.StatusCode.UNAUTHENTICATED, details="Token has expired"
+            )
         except TokenInvalidError:
-            await context.abort(grpc.StatusCode.UNAUTHENTICATED, details="Invalid token")
+            await context.abort(
+                grpc.StatusCode.UNAUTHENTICATED, details="Invalid token"
+            )
 
         try:
             user_id = int(payload.sub)
         except (ValueError, TypeError):
-            await context.abort(grpc.StatusCode.UNAUTHENTICATED, details="Invalid token subject")
+            await context.abort(
+                grpc.StatusCode.UNAUTHENTICATED, details="Invalid token subject"
+            )
 
         async with new_session() as session:
             user = await self._get_user(session, user_id)
 
             if not user:
-                await context.abort(grpc.StatusCode.UNAUTHENTICATED, details="User no longer exists")
+                await context.abort(
+                    grpc.StatusCode.UNAUTHENTICATED, details="User no longer exists"
+                )
 
             return self._model_to_message(user)
 
@@ -55,8 +70,9 @@ class AuthService(auth_pb2_grpc.AuthServiceServicer):
             username=user.username,
             display_name=user.display_name or "",
             picture=user.picture or "",
-            date_of_birth=user.date_of_birth.isoformat() if user.date_of_birth else ""
+            date_of_birth=user.date_of_birth.isoformat() if user.date_of_birth else "",
         )
+
 
 async def start_grpc_server():
     server = grpc.aio.server()

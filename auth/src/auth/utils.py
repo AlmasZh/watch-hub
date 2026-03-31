@@ -18,6 +18,7 @@ class TokenPayload(BaseModel):
 
     model_config = ConfigDict(extra="ignore")
 
+
 def generate_jwt_token(sub: str | int, expires_in_minutes: int):
     now = datetime.now(timezone.utc)
 
@@ -25,16 +26,15 @@ def generate_jwt_token(sub: str | int, expires_in_minutes: int):
         "sub": str(sub),
         "iat": now,
         "exp": now + timedelta(minutes=expires_in_minutes),
-        "iss": settings.JWT_ISSUER
+        "iss": settings.JWT_ISSUER,
     }
 
     token = jwt.encode(
-        payload=payload,
-        key=settings.JWT_PRIVATE_KEY,
-        algorithm=settings.JWT_ALGORITHM
+        payload=payload, key=settings.JWT_PRIVATE_KEY, algorithm=settings.JWT_ALGORITHM
     )
 
     return token
+
 
 def get_current_token_payload(token: str) -> TokenPayload:
     try:
@@ -43,7 +43,7 @@ def get_current_token_payload(token: str) -> TokenPayload:
             key=settings.JWT_PUBLIC_KEY,
             algorithms=["RS256"],
             issuer=settings.JWT_ISSUER,
-            options={"require": ["exp", "iss", "sub"]}
+            options={"require": ["exp", "iss", "sub"]},
         )
 
         return TokenPayload.model_validate(payload_data)
@@ -51,19 +51,20 @@ def get_current_token_payload(token: str) -> TokenPayload:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Token has expired",
-            headers={"WWW-Authenticate": "Bearer"}
+            headers={"WWW-Authenticate": "Bearer"},
         ) from e
     except (jwt.InvalidTokenError, ValidationError) as e:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid authentication credentials",
-            headers={"WWW-Authenticate": "Bearer"}
+            headers={"WWW-Authenticate": "Bearer"},
         ) from e
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Internal server error during verification"
+            detail="Internal server error during verification",
         ) from e
+
 
 async def get_current_token_payload_grpc(token: str) -> TokenPayload:
     try:
@@ -72,7 +73,7 @@ async def get_current_token_payload_grpc(token: str) -> TokenPayload:
             key=settings.JWT_PUBLIC_KEY,
             algorithms=["RS256"],
             issuer=settings.JWT_ISSUER,
-            options={"require": ["exp", "iss", "sub"]}
+            options={"require": ["exp", "iss", "sub"]},
         )
         return TokenPayload.model_validate(payload_data)
     except jwt.ExpiredSignatureError as e:
@@ -82,10 +83,11 @@ async def get_current_token_payload_grpc(token: str) -> TokenPayload:
     except Exception as e:
         raise TokenInvalidError("Internal error during token verification") from e
 
+
 def username_validator(value: str):
     if not value:
-        raise ValueError('Username must not be empty.')
-    if value[0] == '_' or value[0].isdigit():
+        raise ValueError("Username must not be empty.")
+    if value[0] == "_" or value[0].isdigit():
         raise ValueError('Username must not start with an underscore ("_") or a digit.')
     if value.isspace():
         raise ValueError("Username must not be only whitespace.")
@@ -99,10 +101,13 @@ def username_validator(value: str):
             raise ValueError("Username must not contain whitespace.")
     return value
 
+
 pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
+
 
 def verify_password_hash(plain_passwd: str, passwd: str) -> bool:
     return pwd_context.verify(plain_passwd, passwd)
+
 
 def get_password_hash(passwd: str) -> str:
     return pwd_context.hash(passwd)

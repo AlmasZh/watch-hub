@@ -9,7 +9,9 @@ from .security import oauth2_scheme
 from .utils import get_current_token_payload
 
 
-async def get_current_user(access_token: Annotated[str, Depends(oauth2_scheme)], db: SessionDep) -> User:
+async def get_current_user(
+    access_token: Annotated[str, Depends(oauth2_scheme)], db: SessionDep
+) -> User:
     payload = get_current_token_payload(access_token)
     sub = payload.sub
 
@@ -17,7 +19,7 @@ async def get_current_user(access_token: Annotated[str, Depends(oauth2_scheme)],
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Could not validate credentials",
-            headers={"WWW-Authenticate": "Bearer"}
+            headers={"WWW-Authenticate": "Bearer"},
         )
 
     user_id = int(sub)
@@ -26,8 +28,13 @@ async def get_current_user(access_token: Annotated[str, Depends(oauth2_scheme)],
     user = res.scalar_one_or_none()
 
     if user is None:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found", headers={"WWW-Authenticate": "Bearer"})
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User not found",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
 
     return user
+
 
 UserDep = Annotated[User, Depends(get_current_user)]
