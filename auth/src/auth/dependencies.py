@@ -27,3 +27,5 @@ async def get_current_user(access_token: Annotated[str, Depends(oauth2_scheme)],
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found", headers={"WWW-Authenticate": "Bearer"})
 
     return user
+
+UserDep = Annotated[User, Depends(get_current_user)]
