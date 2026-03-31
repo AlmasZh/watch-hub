@@ -3,8 +3,8 @@ from typing import Annotated
 from fastapi import Depends, HTTPException, status
 from sqlalchemy import select
 
-from ..database import SessionDep
-from ..users.models import User
+from src.database import SessionDep
+from src.users.models import User
 from .security import oauth2_scheme
 from .utils import get_current_token_payload
 
