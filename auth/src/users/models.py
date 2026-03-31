@@ -1,3 +1,4 @@
+import datetime
 from sqlalchemy import Date, String
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -13,4 +14,4 @@ class User(Base):
     display_name: Mapped[str] = mapped_column(String(100))
     picture: Mapped[str | None] = mapped_column(nullable=True)
     password: Mapped[str | None] = mapped_column(String(10000), nullable=True)
-    date_of_birth: Mapped[Date | None] = mapped_column(Date, nullable=True)
+    date_of_birth: Mapped[datetime.date | None] = mapped_column(Date, nullable=True)
