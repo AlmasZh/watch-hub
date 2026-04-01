@@ -10,7 +10,7 @@ from .schemas import UserRegister
 from .utils import get_password_hash, verify_password_hash
 
 
-async def create_user(user: UserRegister, db: AsyncSession):
+async def create_user(user: UserRegister, db: AsyncSession) -> User:
     user_dict = user.model_dump(exclude={"password"})
     passwd = user.password.get_secret_value()
     hashed_passwd = get_password_hash(passwd=passwd)
@@ -45,8 +45,10 @@ async def authenticate_user(user: OAuth2PasswordRequestForm, db: AsyncSession) -
     res = await db.execute(stmt)
     selected_user = res.scalar_one_or_none()
 
-    if selected_user is None or not verify_password_hash(
-        user.password, selected_user.password
+    if (
+        selected_user is None
+        or selected_user.password is None
+        or not verify_password_hash(user.password, selected_user.password)
     ):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

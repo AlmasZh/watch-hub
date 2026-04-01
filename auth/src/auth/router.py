@@ -5,6 +5,7 @@ from fastapi.security.oauth2 import OAuth2PasswordRequestForm
 
 from config import settings
 from database import SessionDep
+from users.models import User
 from users.schemas import UserResponse
 
 from .dependencies import UserDep
@@ -16,7 +17,7 @@ router = APIRouter(tags=["auth"])
 
 
 @router.get("/verify", response_model=UserResponse)
-async def verify(current_user: UserDep):
+async def verify(current_user: UserDep) -> User:
     return current_user
 
 
@@ -25,7 +26,7 @@ async def login(
     response: Response,
     user: Annotated[OAuth2PasswordRequestForm, Depends()],
     db: SessionDep,
-):
+) -> AccessTokenResponse:
     selected_user = await authenticate_user(user, db)
 
     access_token = generate_jwt_token(
@@ -44,13 +45,15 @@ async def login(
         max_age=settings.JWT_REFRESH_TOKEN_EXPIRATION * 60,
     )
 
-    return {"access_token": access_token, "token_type": "bearer"}
+    return AccessTokenResponse(access_token=access_token)
 
 
 @router.post(
     "/register", response_model=AccessTokenResponse, status_code=status.HTTP_201_CREATED
 )
-async def register(response: Response, user: UserRegister, db: SessionDep):
+async def register(
+    response: Response, user: UserRegister, db: SessionDep
+) -> AccessTokenResponse:
     new_user = await create_user(user=user, db=db)
 
     access_token = generate_jwt_token(new_user.id, settings.JWT_ACCESS_TOKEN_EXPIRATION)
@@ -67,11 +70,13 @@ async def register(response: Response, user: UserRegister, db: SessionDep):
         max_age=settings.JWT_REFRESH_TOKEN_EXPIRATION * 60,
     )
 
-    return {"access_token": access_token, "token_type": "bearer"}
+    return AccessTokenResponse(access_token=access_token)
 
 
 @router.post("/refresh-token", response_model=AccessTokenResponse)
-async def refresh_access_token(refresh_token: Annotated[str | None, Cookie()] = None):
+async def refresh_access_token(
+    refresh_token: Annotated[str | None, Cookie()] = None,
+) -> AccessTokenResponse:
     if not refresh_token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Refresh token missing"
@@ -81,4 +86,4 @@ async def refresh_access_token(refresh_token: Annotated[str | None, Cookie()] = 
     user_id = payload.sub
     new_access_token = generate_jwt_token(user_id, settings.JWT_ACCESS_TOKEN_EXPIRATION)
 
-    return {"access_token": new_access_token, "token_type": "bearer"}
+    return AccessTokenResponse(access_token=new_access_token)

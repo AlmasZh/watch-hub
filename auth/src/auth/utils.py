@@ -19,7 +19,7 @@ class TokenPayload(BaseModel):
     model_config = ConfigDict(extra="ignore")
 
 
-def generate_jwt_token(sub: str | int, expires_in_minutes: int):
+def generate_jwt_token(sub: str | int, expires_in_minutes: int) -> str:
     now = datetime.now(timezone.utc)
 
     payload = {
@@ -29,6 +29,9 @@ def generate_jwt_token(sub: str | int, expires_in_minutes: int):
         "iss": settings.JWT_ISSUER,
     }
 
+    if settings.JWT_PRIVATE_KEY is None:
+        raise ValueError("JWT private key is not configured.")
+
     token = jwt.encode(
         payload=payload, key=settings.JWT_PRIVATE_KEY, algorithm=settings.JWT_ALGORITHM
     )
@@ -37,6 +40,13 @@ def generate_jwt_token(sub: str | int, expires_in_minutes: int):
 
 
 def get_current_token_payload(token: str) -> TokenPayload:
+    if (
+        settings.JWT_PUBLIC_KEY is None
+        or settings.JWT_PUBLIC_KEY is None
+        or settings.JWT_ISSUER is None
+    ):
+        raise ValueError("JWT is not configured.")
+
     try:
         payload_data = jwt.decode(
             token,
@@ -67,6 +77,13 @@ def get_current_token_payload(token: str) -> TokenPayload:
 
 
 async def get_current_token_payload_grpc(token: str) -> TokenPayload:
+    if (
+        settings.JWT_PUBLIC_KEY is None
+        or settings.JWT_PUBLIC_KEY is None
+        or settings.JWT_ISSUER is None
+    ):
+        raise ValueError("JWT is not configured.")
+
     try:
         payload_data = jwt.decode(
             token,
@@ -84,7 +101,7 @@ async def get_current_token_payload_grpc(token: str) -> TokenPayload:
         raise TokenInvalidError("Internal error during token verification") from e
 
 
-def username_validator(value: str):
+def username_validator(value: str) -> str:
     if not value:
         raise ValueError("Username must not be empty.")
     if value[0] == "_" or value[0].isdigit():
