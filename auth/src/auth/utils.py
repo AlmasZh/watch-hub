@@ -40,7 +40,11 @@ def generate_jwt_token(sub: str | int, expires_in_minutes: int) -> str:
 
 
 def get_current_token_payload(token: str) -> TokenPayload:
-    if settings.JWT_PUBLIC_KEY is None or settings.JWT_PUBLIC_KEY is None or settings.JWT_ISSUER is None:
+    if (
+        settings.JWT_PUBLIC_KEY is None
+        or settings.JWT_PUBLIC_KEY is None
+        or settings.JWT_ISSUER is None
+    ):
         raise ValueError("JWT is not configured.")
 
     try:
@@ -73,7 +77,11 @@ def get_current_token_payload(token: str) -> TokenPayload:
 
 
 async def get_current_token_payload_grpc(token: str) -> TokenPayload:
-    if settings.JWT_PUBLIC_KEY is None or settings.JWT_PUBLIC_KEY is None or settings.JWT_ISSUER is None:
+    if (
+        settings.JWT_PUBLIC_KEY is None
+        or settings.JWT_PUBLIC_KEY is None
+        or settings.JWT_ISSUER is None
+    ):
         raise ValueError("JWT is not configured.")
 
     try:

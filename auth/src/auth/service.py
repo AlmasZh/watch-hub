@@ -10,7 +10,7 @@ from .schemas import UserRegister
 from .utils import get_password_hash, verify_password_hash
 
 
-async def create_user(user: UserRegister, db: AsyncSession):
+async def create_user(user: UserRegister, db: AsyncSession) -> User:
     user_dict = user.model_dump(exclude={"password"})
     passwd = user.password.get_secret_value()
     hashed_passwd = get_password_hash(passwd=passwd)
