@@ -12,13 +12,13 @@ from .exceptions import TokenExpiredError, TokenInvalidError
 
 
 class AuthService(auth_pb2_grpc.AuthServiceServicer):
-    async def _get_user(self, session: AsyncSession, user_id: int):
+    async def _get_user(self, session: AsyncSession, user_id: int) -> User | None:
         stmt = select(User).where(User.id == user_id)
         res = await session.execute(stmt)
         return res.scalar_one_or_none()
 
     async def GetUserById(
-        self, request, context: grpc.aio.ServicerContext
+        self, request: auth_pb2.GetUserByIdRequest, context: grpc.aio.ServicerContext
     ) -> auth_pb2.UserResponse:
         async with new_session() as session:
             user_id = request.user_id
@@ -29,11 +29,12 @@ class AuthService(auth_pb2_grpc.AuthServiceServicer):
                     grpc.StatusCode.NOT_FOUND,
                     details=f"User {request.user_id} not found",
                 )
+                return auth_pb2.UserResponse()
             message = self._model_to_message(user)
             return message
 
     async def ValidateToken(
-        self, request, context: grpc.aio.ServicerContext
+        self, request: auth_pb2.ValidateTokenRequest, context: grpc.aio.ServicerContext
     ) -> auth_pb2.UserResponse:
         try:
             payload = await get_current_token_payload_grpc(request.token)
@@ -60,6 +61,7 @@ class AuthService(auth_pb2_grpc.AuthServiceServicer):
                 await context.abort(
                     grpc.StatusCode.UNAUTHENTICATED, details="User no longer exists"
                 )
+                return auth_pb2.UserResponse()
 
             return self._model_to_message(user)
 
@@ -74,7 +76,7 @@ class AuthService(auth_pb2_grpc.AuthServiceServicer):
         )
 
 
-async def start_grpc_server():
+async def start_grpc_server() -> grpc.aio.Server:
     server = grpc.aio.server()
     auth_pb2_grpc.add_AuthServiceServicer_to_server(AuthService(), server)
 
