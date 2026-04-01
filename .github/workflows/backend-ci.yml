@@ -1,0 +1,34 @@
+name: Auth CI
+
+on: push
+
+jobs:
+  auth-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+      - uses: astral-sh/ruff-action@v3
+        with:
+          src: ./auth/src
+
+  auth-typecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+      - working-directory: ./auth
+        run: |
+          python -m venv .venv
+          source .venv/bin/activate
+          pip install -r ./requirements/dev.txt
+
+      - name: Type check with MyPy
+        working-directory: ./auth
+        run: |
+          source .venv/bin/activate
+          mypy
