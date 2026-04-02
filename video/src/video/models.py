@@ -1,10 +1,20 @@
 import uuid
-from enum import Enum
 from datetime import datetime
+from enum import Enum
 
-from sqlalchemy import ForeignKey, String, Integer, Float, Text, DateTime, func, Table, Column
-from sqlalchemy.orm import mapped_column, Mapped, relationship
+from sqlalchemy import (
+    Column,
+    DateTime,
+    Float,
+    ForeignKey,
+    Integer,
+    String,
+    Table,
+    Text,
+    func,
+)
 from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.models import Base
 
@@ -15,7 +25,7 @@ class MediaStatus(str, Enum):
     READY = "ready"       # Ready to stream
     FAILED = "failed"
 
-class VideoPrivacy(str, Enum): # This is unnecessary currently, but may be needed in the future 
+class VideoPrivacy(str, Enum): # This is unnecessary currently, but may be needed in the future
     PUBLIC = "public"
     PRIVATE = "private"
     UNLISTED = "unlisted"
@@ -29,7 +39,7 @@ movie_genres = Table(
 
 class Media(Base):
     __tablename__ = "media"
-    
+
     id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
     )
@@ -62,7 +72,7 @@ class Media(Base):
 
 class UserVideo(Media):
     __tablename__ = "user_videos"
-    
+
     id: Mapped[uuid.UUID] = mapped_column(
         ForeignKey("media.id"), primary_key=True
     )
@@ -87,7 +97,7 @@ class Movie(Media):
     director: Mapped[str | None] = mapped_column(String(100))
     rating: Mapped[float | None] = mapped_column(Float) # e.g. IMDB rating 1-10
     poster_url: Mapped[str | None] = mapped_column(String(512))
-    
+
     # Relationships
     genres: Mapped[list["Genre"]] = relationship(
         secondary=movie_genres, back_populates="movies"
@@ -99,10 +109,10 @@ class Movie(Media):
 
 class Genre(Base):
     __tablename__ = "genres"
-    
+
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(50), unique=True)
-    
+
     movies: Mapped[list["Movie"]] = relationship(
         secondary=movie_genres, back_populates="genres"
     )

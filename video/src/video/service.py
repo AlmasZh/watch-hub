@@ -1,12 +1,13 @@
+from uuid import UUID
+
 from fastapi import HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
-from uuid import UUID
 
-from .models import Movie, UserVideo
 from ..auth.schemas import User
 from .exceptions import ForbiddenError, NotFoundError
+from .models import Movie, UserVideo
 
 
 async def get_movies(db: AsyncSession) -> list[Movie]:
@@ -45,4 +46,4 @@ async def delete_user_video(video_uuid: UUID, user: User, db: AsyncSession) -> N
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Database error occurred while deleting video"
-            )
+            ) from e

@@ -1,12 +1,18 @@
-from fastapi import APIRouter, HTTPException, status, Response
 from uuid import UUID
 
-from src.database import SessionDep
-from ..auth.dependencies import UserDep
-from .service import get_movies, get_movie_by_uuid, get_all_user_videos, delete_user_video
-from .schemas import MovieResponse, UserVideoResponse
-from .exceptions import ForbiddenError, NotFoundError
+from fastapi import APIRouter, HTTPException, Response, status
 
+from src.database import SessionDep
+
+from ..auth.dependencies import UserDep
+from .exceptions import ForbiddenError, NotFoundError
+from .schemas import MovieResponse, UserVideoResponse
+from .service import (
+    delete_user_video,
+    get_all_user_videos,
+    get_movie_by_uuid,
+    get_movies,
+)
 
 router = APIRouter(tags=["video"])
 
@@ -30,7 +36,7 @@ async def delete_video(video_uuid: UUID, user: UserDep, db: SessionDep):
     try:
         await delete_user_video(video_uuid, user, db)
     except NotFoundError as e:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e)) from e
     except ForbiddenError as e:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(e))
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(e)) from e
     return Response(status_code=status.HTTP_204_NO_CONTENT)
