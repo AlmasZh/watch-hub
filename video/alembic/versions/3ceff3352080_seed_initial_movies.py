@@ -5,20 +5,19 @@ Revises: 2400476bb5a0
 Create Date: 2026-02-16 15:40:56.887605
 
 """
-from typing import Sequence, Union
+import uuid
+from collections.abc import Sequence
 
-from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.dialects.postgresql import UUID
-from datetime import datetime, timezone
-import uuid
 
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision: str = '3ceff3352080'
-down_revision: Union[str, Sequence[str], None] = '2400476bb5a0'
-branch_labels: Union[str, Sequence[str], None] = None
-depends_on: Union[str, Sequence[str], None] = None
+down_revision: str | Sequence[str] | None = '2400476bb5a0'
+branch_labels: str | Sequence[str] | None = None
+depends_on: str | Sequence[str] | None = None
 
 
 def upgrade() -> None:
@@ -51,7 +50,7 @@ def upgrade() -> None:
     # 2. Prepare the data
     # Status 'ready' matches MediaStatus.READY
     # Type 'movie' matches polymorphic_identity
-    
+
     movie_data = [
         {
             "title": "Inception",
@@ -143,16 +142,16 @@ def upgrade() -> None:
 
 def downgrade() -> None:
     # Delete based on the unique storage keys we just added
-    # We delete from 'movies' first, then 'media' to respect foreign keys 
+    # We delete from 'movies' first, then 'media' to respect foreign keys
     # (though CASCADE might handle it depending on DB config, explicit is safer in migration)
-    
+
     storage_keys = [
         "s3://amzn-wt-project-movies/inception.mp4",
         "s3://amzn-wt-project-movies/john_wick.mp4",
         "s3://amzn-wt-project-movies/mad_max.mp4",
         "s3://amzn-wt-project-movies/the_dark_knight.mp4"
     ]
-    
+
     # We need to find the IDs first to delete from the child table
     connection = op.get_bind()
     media_table = sa.table(
@@ -169,7 +168,7 @@ def downgrade() -> None:
     results = connection.execute(
         sa.select(media_table.c.id).where(media_table.c.storage_key.in_(storage_keys))
     ).fetchall()
-    
+
     ids_to_delete = [row[0] for row in results]
 
     if ids_to_delete:
@@ -177,7 +176,7 @@ def downgrade() -> None:
         op.execute(
             movies_table.delete().where(movies_table.c.id.in_(ids_to_delete))
         )
-        
+
         # Delete from parent table (media)
         op.execute(
             media_table.delete().where(media_table.c.id.in_(ids_to_delete))

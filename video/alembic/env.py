@@ -5,8 +5,8 @@ from sqlalchemy import pool
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from alembic import context
-from src.models import Base
 from src.config import settings
+from src.models import Base
 from src.video import models as video_models  # noqa
 
 # this is the Alembic Config object, which provides
