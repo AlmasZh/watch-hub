@@ -1,7 +1,7 @@
 import grpc
 
-from src.grpc_gen.auth_service import auth_pb2, auth_pb2_grpc
 from src.config import settings
+from src.grpc_gen.auth_service import auth_pb2, auth_pb2_grpc
 
 
 class AuthGrpcClient:
@@ -16,10 +16,12 @@ class AuthGrpcClient:
     async def close(self):
         if self.channel:
             await self.channel.close()
-    
+
     async def validate_token(self, token: str):
         if self.stub is None:
-            raise RuntimeError("AuthGrpcClient is not connected. Call connect() before validate_token().")
+            raise RuntimeError(
+                "AuthGrpcClient is not connected. Call connect() before validate_token()."
+            )
         try:
             request = auth_pb2.ValidateTokenRequest(token=token)
             response = await self.stub.ValidateToken(request)
@@ -31,5 +33,6 @@ class AuthGrpcClient:
                 return None
             print(f"gRPC Error: {e}")
             raise
+
 
 auth_grpc_client = AuthGrpcClient()

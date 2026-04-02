@@ -1,31 +1,35 @@
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
-from .database import setup_db
-from .config import settings
-from .video.router import router as video_router
-from .upload.router import router as upload_router
-from .auth.auth_client import auth_grpc_client
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
+from .auth.auth_client import auth_grpc_client
+from .config import settings
+from .upload.router import router as upload_router
+from .video.router import router as video_router
 
 origins = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
-    "http://wh.com", "https://wh.com",
-    "http://www.wh.com", "https://www.wh.com",
+    "http://wh.com",
+    "https://wh.com",
+    "http://www.wh.com",
+    "https://www.wh.com",
 ]
 prefix = settings.api_prefix
 
+
 @asynccontextmanager
-async def lifespan(app: FastAPI):
-    # await setup_db()
+async def lifespan(_app: FastAPI):
     auth_grpc_client.connect()
     yield
-    
+
     await auth_grpc_client.close()
 
-app = FastAPI(lifespan=lifespan, docs_url=f'{prefix}/docs', openapi_url=f'{prefix}/openapi.json')
+
+app = FastAPI(
+    lifespan=lifespan, docs_url=f"{prefix}/docs", openapi_url=f"{prefix}/openapi.json"
+)
 
 app.add_middleware(
     CORSMiddleware,
@@ -38,6 +42,7 @@ app.add_middleware(
 app.include_router(video_router, prefix=prefix)
 app.include_router(upload_router, prefix=prefix)
 
-@app.get(f'{prefix}/health')
+
+@app.get(f"{prefix}/health")
 async def health_check():
     return {"message": "ok"}
