@@ -3,10 +3,10 @@ import uuid
 from fastapi import APIRouter, HTTPException, status
 from sqlalchemy.exc import SQLAlchemyError
 
-from ..auth.dependencies import UserDep
-from ..config import settings
-from ..database import SessionDep
-from ..video.models import UserVideo
+from auth.dependencies import UserDep
+from config import settings
+from database import SessionDep
+from video.models import UserVideo
 from .dependencies import StorageClientDep
 from .schemas import (
     UploadCompleteRequest,

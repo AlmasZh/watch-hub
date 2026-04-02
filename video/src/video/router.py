@@ -4,7 +4,7 @@ from fastapi import APIRouter, HTTPException, Response, status
 
 from src.database import SessionDep
 
-from ..auth.dependencies import UserDep
+from auth.dependencies import UserDep
 from .exceptions import ForbiddenError, NotFoundError
 from .schemas import MovieResponse, UserVideoResponse
 from .service import (
