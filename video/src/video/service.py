@@ -6,6 +6,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from auth.schemas import User
+
 from .exceptions import ForbiddenError, NotFoundError
 from .models import Movie, UserVideo
 

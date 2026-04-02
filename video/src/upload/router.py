@@ -7,6 +7,7 @@ from auth.dependencies import UserDep
 from config import settings
 from database import SessionDep
 from video.models import UserVideo
+
 from .dependencies import StorageClientDep
 from .schemas import (
     UploadCompleteRequest,
