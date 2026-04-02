@@ -8,9 +8,7 @@ from pydantic.alias_generators import to_camel
 
 class MovieResponse(BaseModel):
     model_config = ConfigDict(
-        alias_generator=to_camel,
-        populate_by_name=True,
-        from_attributes=True
+        alias_generator=to_camel, populate_by_name=True, from_attributes=True
     )
 
     id: UUID
@@ -30,12 +28,13 @@ class MovieResponse(BaseModel):
     status: Literal["pending", "processing", "ready", "failed"]
     type: str
 
+
 class UserVideoResponse(BaseModel):
     model_config = ConfigDict(
         alias_generator=to_camel,
         validate_by_alias=True,
         validate_by_name=True,
-        from_attributes=True
+        from_attributes=True,
     )
 
     id: UUID

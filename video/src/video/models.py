@@ -20,22 +20,27 @@ from src.models import Base
 
 
 class MediaStatus(str, Enum):
-    PENDING = "pending"   # Uploaded
+    PENDING = "pending"  # Uploaded
     PROCESSING = "processing"
-    READY = "ready"       # Ready to stream
+    READY = "ready"  # Ready to stream
     FAILED = "failed"
 
-class VideoPrivacy(str, Enum): # This is unnecessary currently, but may be needed in the future
+
+class VideoPrivacy(
+    str, Enum
+):  # This is unnecessary currently, but may be needed in the future
     PUBLIC = "public"
     PRIVATE = "private"
     UNLISTED = "unlisted"
+
 
 movie_genres = Table(
     "movie_genres",
     Base.metadata,
     Column("movie_id", ForeignKey("movies.id"), primary_key=True),
-    Column("genre_id", ForeignKey("genres.id"), primary_key=True)
+    Column("genre_id", ForeignKey("genres.id"), primary_key=True),
 )
+
 
 class Media(Base):
     __tablename__ = "media"
@@ -50,9 +55,7 @@ class Media(Base):
     stream_url: Mapped[str] = mapped_column(String(512))
     thumbnail_url: Mapped[str | None] = mapped_column(String(512))
     duration_seconds: Mapped[int] = mapped_column(Integer, default=0)
-    status: Mapped[MediaStatus] = mapped_column(
-        String, default=MediaStatus.PENDING
-    )
+    status: Mapped[MediaStatus] = mapped_column(String, default=MediaStatus.PENDING)
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
@@ -73,29 +76,24 @@ class Media(Base):
 class UserVideo(Media):
     __tablename__ = "user_videos"
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        ForeignKey("media.id"), primary_key=True
-    )
+    id: Mapped[uuid.UUID] = mapped_column(ForeignKey("media.id"), primary_key=True)
     owner_id: Mapped[int] = mapped_column(Integer)
-    privacy: Mapped[VideoPrivacy] = mapped_column(
-        String, default=VideoPrivacy.PUBLIC
-    )
+    privacy: Mapped[VideoPrivacy] = mapped_column(String, default=VideoPrivacy.PUBLIC)
 
     __mapper_args__ = {
         "polymorphic_identity": "user_video",
     }
 
+
 class Movie(Media):
     __tablename__ = "movies"
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        ForeignKey("media.id"), primary_key=True
-    )
+    id: Mapped[uuid.UUID] = mapped_column(ForeignKey("media.id"), primary_key=True)
 
     # Specific fields for Movies
     release_year: Mapped[int] = mapped_column(Integer)
     director: Mapped[str | None] = mapped_column(String(100))
-    rating: Mapped[float | None] = mapped_column(Float) # e.g. IMDB rating 1-10
+    rating: Mapped[float | None] = mapped_column(Float)  # e.g. IMDB rating 1-10
     poster_url: Mapped[str | None] = mapped_column(String(512))
 
     # Relationships
@@ -106,6 +104,7 @@ class Movie(Media):
     __mapper_args__ = {
         "polymorphic_identity": "movie",
     }
+
 
 class Genre(Base):
     __tablename__ = "genres"
