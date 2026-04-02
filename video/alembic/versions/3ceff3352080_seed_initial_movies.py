@@ -5,6 +5,7 @@ Revises: 2400476bb5a0
 Create Date: 2026-02-16 15:40:56.887605
 
 """
+
 import uuid
 from collections.abc import Sequence
 
@@ -14,8 +15,8 @@ from sqlalchemy.dialects.postgresql import UUID
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision: str = '3ceff3352080'
-down_revision: str | Sequence[str] | None = '2400476bb5a0'
+revision: str = "3ceff3352080"
+down_revision: str | Sequence[str] | None = "2400476bb5a0"
 branch_labels: str | Sequence[str] | None = None
 depends_on: str | Sequence[str] | None = None
 
@@ -23,28 +24,28 @@ depends_on: str | Sequence[str] | None = None
 def upgrade() -> None:
     # 1. Define temporary table representations to avoid importing app models
     media_table = sa.table(
-        'media',
-        sa.column('id', UUID(as_uuid=True)),
-        sa.column('title', sa.String),
-        sa.column('description', sa.Text),
-        sa.column('original_file_name', sa.String),
-        sa.column('storage_key', sa.String),
-        sa.column('stream_url', sa.String),
-        sa.column('thumbnail_url', sa.String),
-        sa.column('duration_seconds', sa.Integer),
-        sa.column('status', sa.String),
-        sa.column('created_at', sa.DateTime),
-        sa.column('updated_at', sa.DateTime),
-        sa.column('type', sa.String), # Polymorphic discriminator
+        "media",
+        sa.column("id", UUID(as_uuid=True)),
+        sa.column("title", sa.String),
+        sa.column("description", sa.Text),
+        sa.column("original_file_name", sa.String),
+        sa.column("storage_key", sa.String),
+        sa.column("stream_url", sa.String),
+        sa.column("thumbnail_url", sa.String),
+        sa.column("duration_seconds", sa.Integer),
+        sa.column("status", sa.String),
+        sa.column("created_at", sa.DateTime),
+        sa.column("updated_at", sa.DateTime),
+        sa.column("type", sa.String),  # Polymorphic discriminator
     )
 
     movies_table = sa.table(
-        'movies',
-        sa.column('id', UUID(as_uuid=True)),
-        sa.column('release_year', sa.Integer),
-        sa.column('director', sa.String),
-        sa.column('rating', sa.Float),
-        sa.column('poster_url', sa.String),
+        "movies",
+        sa.column("id", UUID(as_uuid=True)),
+        sa.column("release_year", sa.Integer),
+        sa.column("director", sa.String),
+        sa.column("rating", sa.Float),
+        sa.column("poster_url", sa.String),
     )
 
     # 2. Prepare the data
@@ -60,7 +61,7 @@ def upgrade() -> None:
             "stream_url": "https://d24lanzu8wxnoe.cloudfront.net/inception/inception.m3u8",
             "thumbnail_url": "https://dk3at0kil7p4c.cloudfront.net/thumbnails/inception_thumbnail.jpg",
             "poster_url": "https://dk3at0kil7p4c.cloudfront.net/posters/inception_poster.jpg",
-            "duration_seconds": 8880, # 2h 28m
+            "duration_seconds": 8880,  # 2h 28m
             "release_year": 2010,
             "director": "Christopher Nolan",
             "rating": 8.8,
@@ -74,7 +75,7 @@ def upgrade() -> None:
             "stream_url": "https://d24lanzu8wxnoe.cloudfront.net/john_wick.m3u8",
             "thumbnail_url": "https://dk3at0kil7p4c.cloudfront.net/thumbnails/john_wick_thumbnail.jpg",
             "poster_url": "https://dk3at0kil7p4c.cloudfront.net/posters/john_wick_poster.jpg",
-            "duration_seconds": 6060, # 1h 41m
+            "duration_seconds": 6060,  # 1h 41m
             "release_year": 2014,
             "director": "Chad Stahelski",
             "rating": 7.4,
@@ -87,7 +88,7 @@ def upgrade() -> None:
             "stream_url": "https://d24lanzu8wxnoe.cloudfront.net/mad_max/mad_max.m3u8",
             "thumbnail_url": "https://dk3at0kil7p4c.cloudfront.net/thumbnails/mad_max_thumbnail.jpg",
             "poster_url": "https://dk3at0kil7p4c.cloudfront.net/posters/mad-max-fury-road-poster.webp",
-            "duration_seconds": 7200, # 2h 0m
+            "duration_seconds": 7200,  # 2h 0m
             "release_year": 2015,
             "director": "George Miller",
             "rating": 8.1,
@@ -100,11 +101,11 @@ def upgrade() -> None:
             "stream_url": "https://d24lanzu8wxnoe.cloudfront.net/the_dark_knight/the_dark_knight.m3u8",
             "thumbnail_url": "https://dk3at0kil7p4c.cloudfront.net/thumbnails/the_dark_knight_thumbnail.jpg",
             "poster_url": "https://dk3at0kil7p4c.cloudfront.net/posters/the_dark_knight_poster.jpg",
-            "duration_seconds": 9120, # 2h 32m
+            "duration_seconds": 9120,  # 2h 32m
             "release_year": 2008,
             "director": "Christopher Nolan",
             "rating": 9.0,
-        }
+        },
     ]
 
     # 3. Insert logic
@@ -124,7 +125,7 @@ def upgrade() -> None:
                 thumbnail_url=movie["thumbnail_url"],
                 duration_seconds=movie["duration_seconds"],
                 status="ready",  # MediaStatus.READY
-                type="movie",    # polymorphic_identity
+                type="movie",  # polymorphic_identity
             )
         )
 
@@ -135,7 +136,7 @@ def upgrade() -> None:
                 release_year=movie["release_year"],
                 director=movie["director"],
                 rating=movie["rating"],
-                poster_url=movie["poster_url"]
+                poster_url=movie["poster_url"],
             )
         )
 
@@ -149,20 +150,17 @@ def downgrade() -> None:
         "s3://amzn-wt-project-movies/inception.mp4",
         "s3://amzn-wt-project-movies/john_wick.mp4",
         "s3://amzn-wt-project-movies/mad_max.mp4",
-        "s3://amzn-wt-project-movies/the_dark_knight.mp4"
+        "s3://amzn-wt-project-movies/the_dark_knight.mp4",
     ]
 
     # We need to find the IDs first to delete from the child table
     connection = op.get_bind()
     media_table = sa.table(
-        'media',
-        sa.column('id', UUID(as_uuid=True)),
-        sa.column('storage_key', sa.String)
+        "media",
+        sa.column("id", UUID(as_uuid=True)),
+        sa.column("storage_key", sa.String),
     )
-    movies_table = sa.table(
-        'movies',
-        sa.column('id', UUID(as_uuid=True))
-    )
+    movies_table = sa.table("movies", sa.column("id", UUID(as_uuid=True)))
 
     # Fetch IDs
     results = connection.execute(
@@ -173,11 +171,7 @@ def downgrade() -> None:
 
     if ids_to_delete:
         # Delete from child table (movies)
-        op.execute(
-            movies_table.delete().where(movies_table.c.id.in_(ids_to_delete))
-        )
+        op.execute(movies_table.delete().where(movies_table.c.id.in_(ids_to_delete)))
 
         # Delete from parent table (media)
-        op.execute(
-            media_table.delete().where(media_table.c.id.in_(ids_to_delete))
-        )
+        op.execute(media_table.delete().where(media_table.c.id.in_(ids_to_delete)))
