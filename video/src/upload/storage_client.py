@@ -1,8 +1,11 @@
+from contextlib import AbstractAsyncContextManager
+from typing import Any
+
 import aioboto3
-from types_aiobotocore_s3 import S3Client
-from typing import Any, AsyncContextManager
-from botocore.exceptions import ClientError
 from botocore.config import Config
+from botocore.exceptions import ClientError
+from types_aiobotocore_s3 import S3Client
+
 
 class S3StorageClient:
     def __init__(
@@ -28,14 +31,14 @@ class S3StorageClient:
             aws_secret_access_key=aws_secret_access_key,
             region_name=region_name,
         )
-    
-    def get_client(self) -> AsyncContextManager[S3Client]:
+
+    def get_client(self) -> AbstractAsyncContextManager[S3Client]:
         return self.session.client(
-            "s3", 
+            "s3",
             endpoint_url=self.endpoint_url,
             config=self.boto_config
         )
-    
+
     async def create_multipart_upload(self, object_key: str, content_type: str = "video/mp4"):
         try:
             async with self.get_client() as s3:
@@ -48,7 +51,7 @@ class S3StorageClient:
         except ClientError as e:
             print(f"Failed to create multipart upload for {object_key}: {e}")
             raise
-    
+
     async def generate_presigned_urls(
         self, object_key: str, upload_id: str, parts_count: int, expires_in: int = 3600
     ) -> list[dict[str, Any]]:
@@ -74,7 +77,7 @@ class S3StorageClient:
         except ClientError as e:
             print(f"Failed to generate presigned urls for {object_key}: {e}")
             raise
-    
+
     async def complete_multipart_upload(self, object_key: str, upload_id: str, parts: list[dict[str, Any]]):
         sorted_parts = sorted(parts, key=lambda x: x["PartNumber"])
 

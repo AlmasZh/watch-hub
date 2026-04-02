@@ -1,9 +1,10 @@
 from typing import Annotated
+
 from fastapi import Depends
 
 from src.config import settings
-from .storage_client import S3StorageClient
 
+from .storage_client import S3StorageClient
 
 storage_client = S3StorageClient(
     bucket_name=settings.s3_bucket_name,

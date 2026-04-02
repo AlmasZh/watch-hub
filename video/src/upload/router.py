@@ -1,14 +1,19 @@
-from fastapi import HTTPException, APIRouter, status
-from sqlalchemy.exc import SQLAlchemyError
 import uuid
 
-from .schemas import UploadCompleteRequest, UploadStartRequest, UploadStartResponse, UploadCompleteResponse
-from .dependencies import StorageClientDep
-from ..auth.dependencies import UserDep
-from ..video.models import UserVideo
-from ..database import SessionDep
-from ..config import settings
+from fastapi import APIRouter, HTTPException, status
+from sqlalchemy.exc import SQLAlchemyError
 
+from ..auth.dependencies import UserDep
+from ..config import settings
+from ..database import SessionDep
+from ..video.models import UserVideo
+from .dependencies import StorageClientDep
+from .schemas import (
+    UploadCompleteRequest,
+    UploadCompleteResponse,
+    UploadStartRequest,
+    UploadStartResponse,
+)
 
 router = APIRouter(prefix="/upload", tags=["upload"])
 
@@ -17,7 +22,7 @@ async def start_multipart_upload(request: UploadStartRequest, storage: StorageCl
     file_key = f"raw_videos/{uuid.uuid4()}-{request.filename}"
 
     upload_id = await storage.create_multipart_upload(
-        object_key=file_key, 
+        object_key=file_key,
         content_type=request.content_type
     )
 
@@ -29,7 +34,7 @@ async def start_multipart_upload(request: UploadStartRequest, storage: StorageCl
 @router.post("/complete", response_model=UploadCompleteResponse)
 async def complete_multipart_upload(
         request: UploadCompleteRequest,
-        storage: StorageClientDep, 
+        storage: StorageClientDep,
         user: UserDep,
         db: SessionDep
     ):
@@ -41,20 +46,20 @@ async def complete_multipart_upload(
             upload_id=request.upload_id,
             parts=parts_dict
         )
-    except Exception as store_exc:
+    except Exception as e:
         try:
             await storage.abort_multipart_upload(
                 request.file_key,
                 upload_id=request.upload_id,
             )
         except Exception as abort_exc:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(abort_exc))
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(abort_exc)) from abort_exc
 
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, 
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail="Failed to complete multipart upload. The operation was aborted."
-        )
-    
+        ) from e
+
     video = UserVideo(
         owner_id=user.id,
         title=request.filename,
@@ -71,9 +76,9 @@ async def complete_multipart_upload(
         await db.refresh(video)
         return video
 
-    except SQLAlchemyError as db_exc:
+    except SQLAlchemyError as e:
         await db.rollback()
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="An internal server error occurred while creating the video."
-        )
+        ) from e
