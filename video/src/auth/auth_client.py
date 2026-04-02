@@ -19,7 +19,9 @@ class AuthGrpcClient:
 
     async def validate_token(self, token: str):
         if self.stub is None:
-            raise RuntimeError("AuthGrpcClient is not connected. Call connect() before validate_token().")
+            raise RuntimeError(
+                "AuthGrpcClient is not connected. Call connect() before validate_token()."
+            )
         try:
             request = auth_pb2.ValidateTokenRequest(token=token)
             response = await self.stub.ValidateToken(request)
@@ -31,5 +33,6 @@ class AuthGrpcClient:
                 return None
             print(f"gRPC Error: {e}")
             raise
+
 
 auth_grpc_client = AuthGrpcClient()
