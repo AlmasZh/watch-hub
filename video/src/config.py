@@ -1,6 +1,8 @@
 from typing import Literal
+
 from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
@@ -16,7 +18,7 @@ class Settings(BaseSettings):
     db_name: str = "video"
 
     db_password: SecretStr
-    
+
     jwt_public: SecretStr
     jwt_algorithm: str = "RS256"
     jwt_issuer: str = "watch-hub"
@@ -37,7 +39,7 @@ class Settings(BaseSettings):
     @property
     def db_url(self) -> str:
         return f'{self.db_scheme}://{self.db_user}:{self.db_password.get_secret_value()}@{self.db_host}:{self.db_port}/{self.db_name}'
-    
+
     @property
     def stream_url_prefix(self) -> str:
         return f'{self.s3_endpoint_url}/{self.s3_bucket_name}/'

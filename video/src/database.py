@@ -1,10 +1,11 @@
 from typing import Annotated
+
 from fastapi import Depends
-from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession, create_async_engine
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 from .config import settings
 from .models import Base
-from .video.models import Media, UserVideo, Movie, Genre
+from .video.models import Genre, Media, Movie, UserVideo  # noqa: F401
 
 engine = create_async_engine(settings.db_url, echo=True)
 new_session = async_sessionmaker(engine, expire_on_commit=False)
