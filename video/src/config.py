@@ -6,9 +6,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
-        env_file=".env",
-        secrets_dir="/run/secrets",
-        extra="ignore"
+        env_file=".env", secrets_dir="/run/secrets", extra="ignore"
     )
 
     db_scheme: str = "postgresql+asyncpg"
@@ -38,10 +36,11 @@ class Settings(BaseSettings):
 
     @property
     def db_url(self) -> str:
-        return f'{self.db_scheme}://{self.db_user}:{self.db_password.get_secret_value()}@{self.db_host}:{self.db_port}/{self.db_name}'
+        return f"{self.db_scheme}://{self.db_user}:{self.db_password.get_secret_value()}@{self.db_host}:{self.db_port}/{self.db_name}"
 
     @property
     def stream_url_prefix(self) -> str:
-        return f'{self.s3_endpoint_url}/{self.s3_bucket_name}/'
+        return f"{self.s3_endpoint_url}/{self.s3_bucket_name}/"
+
 
 settings = Settings()
