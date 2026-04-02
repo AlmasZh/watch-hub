@@ -3,10 +3,10 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .auth.auth_client import auth_grpc_client
-from .config import settings
-from .upload.router import router as upload_router
-from .video.router import router as video_router
+from auth.auth_client import auth_grpc_client
+from config import settings
+from upload.router import router as upload_router
+from video.router import router as video_router
 
 origins = [
     "http://localhost:3000",

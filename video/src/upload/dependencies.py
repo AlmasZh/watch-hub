@@ -2,7 +2,7 @@ from typing import Annotated
 
 from fastapi import Depends
 
-from src.config import settings
+from config import settings
 
 from .storage_client import S3StorageClient
 

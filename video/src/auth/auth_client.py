@@ -1,7 +1,7 @@
 import grpc
 
-from src.config import settings
-from src.grpc_gen.auth_service import auth_pb2, auth_pb2_grpc
+from config import settings
+from grpc_gen.auth_service import auth_pb2, auth_pb2_grpc
 
 
 class AuthGrpcClient:
