@@ -15,7 +15,9 @@ storage_client = S3StorageClient(
     force_path_style=settings.s3_force_path_style,
 )
 
+
 def get_storage_client() -> S3StorageClient:
     return storage_client
+
 
 StorageClientDep = Annotated[S3StorageClient, Depends(get_storage_client)]
