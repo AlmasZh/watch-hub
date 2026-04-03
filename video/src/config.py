@@ -26,7 +26,7 @@ class Settings(BaseSettings):
     aws_secret_access_key: str
     aws_region: str
     s3_endpoint_url: str
-    s3_force_path_style: bool | None = None
+    s3_force_path_style: bool = False
 
     grpc_addr: str = "auth:50051"
     auth_addr: str = "http://wh.com/api/auth"
