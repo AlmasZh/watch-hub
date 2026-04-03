@@ -1,10 +1,14 @@
-from contextlib import AbstractAsyncContextManager
 from typing import Any
 
 import aioboto3
-from botocore.config import Config
+from aiobotocore.config import AioConfig
+from aiobotocore.session import ClientCreatorContext
 from botocore.exceptions import ClientError
 from types_aiobotocore_s3 import S3Client
+from types_aiobotocore_s3.type_defs import (
+    CompletedPartTypeDef,
+    CompleteMultipartUploadOutputTypeDef,
+)
 
 
 class S3StorageClient:
@@ -16,16 +20,14 @@ class S3StorageClient:
         region_name: str,
         endpoint_url: str | None = None,
         force_path_style: bool = False,
-    ):
+    ) -> None:
         self.bucket_name = bucket_name
         self.endpoint_url = endpoint_url
 
-        client_config_kwargs = {}
-        if force_path_style:
-            client_config_kwargs["s3"] = {"addressing_style": "path"}
-            client_config_kwargs["signature_version"] = "s3v4"
         self.boto_config = (
-            Config(**client_config_kwargs) if client_config_kwargs else None
+            AioConfig(s3={"addressing_style": "path"}, signature_version="s3v4")
+            if force_path_style
+            else None
         )
 
         self.session = aioboto3.Session(
@@ -34,14 +36,14 @@ class S3StorageClient:
             region_name=region_name,
         )
 
-    def get_client(self) -> AbstractAsyncContextManager[S3Client]:
+    def get_client(self) -> ClientCreatorContext[S3Client]:
         return self.session.client(
             "s3", endpoint_url=self.endpoint_url, config=self.boto_config
         )
 
     async def create_multipart_upload(
         self, object_key: str, content_type: str = "video/mp4"
-    ):
+    ) -> str:
         try:
             async with self.get_client() as s3:
                 response = await s3.create_multipart_upload(
@@ -76,8 +78,8 @@ class S3StorageClient:
             raise
 
     async def complete_multipart_upload(
-        self, object_key: str, upload_id: str, parts: list[dict[str, Any]]
-    ):
+        self, object_key: str, upload_id: str, parts: list[CompletedPartTypeDef]
+    ) -> CompleteMultipartUploadOutputTypeDef:
         sorted_parts = sorted(parts, key=lambda x: x["PartNumber"])
 
         try:
