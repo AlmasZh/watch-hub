@@ -1,7 +1,9 @@
 import uuid
+from typing import cast
 
 from fastapi import APIRouter, HTTPException, status
 from sqlalchemy.exc import SQLAlchemyError
+from types_aiobotocore_s3.type_defs import CompletedPartTypeDef
 
 from auth.dependencies import UserDep
 from config import settings
@@ -24,7 +26,7 @@ router = APIRouter(prefix="/upload", tags=["upload"])
 )
 async def start_multipart_upload(
     request: UploadStartRequest, storage: StorageClientDep
-):
+) -> UploadStartResponse:
     file_key = f"raw_videos/{uuid.uuid4()}-{request.filename}"
 
     upload_id = await storage.create_multipart_upload(
@@ -45,8 +47,11 @@ async def complete_multipart_upload(
     storage: StorageClientDep,
     user: UserDep,
     db: SessionDep,
-):
-    parts_dict = [part.model_dump(by_alias=True) for part in request.parts]
+) -> UserVideo:
+    parts_dict: list[CompletedPartTypeDef] = [
+        cast(CompletedPartTypeDef, part.model_dump(by_alias=True))
+        for part in request.parts
+    ]
 
     try:
         await storage.complete_multipart_upload(
