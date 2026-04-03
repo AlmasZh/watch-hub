@@ -5,19 +5,19 @@ from grpc_gen.auth_service import auth_pb2, auth_pb2_grpc
 
 
 class AuthGrpcClient:
-    def __init__(self):
+    def __init__(self) -> None:
         self.channel: grpc.aio.Channel | None = None
         self.stub: auth_pb2_grpc.AuthServiceStub | None = None
 
-    def connect(self):
+    def connect(self) -> None:
         self.channel = grpc.aio.insecure_channel(settings.grpc_addr)
         self.stub = auth_pb2_grpc.AuthServiceStub(self.channel)
 
-    async def close(self):
+    async def close(self) -> None:
         if self.channel:
             await self.channel.close()
 
-    async def validate_token(self, token: str):
+    async def validate_token(self, token: str) -> dict[str, str] | None:
         if self.stub is None:
             raise RuntimeError(
                 "AuthGrpcClient is not connected. Call connect() before validate_token()."
