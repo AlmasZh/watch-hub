@@ -26,6 +26,7 @@ python_version = "3.13"
 mypy_path = "src"
 explicit_package_bases = true
 files = ["src"] 
+plugins = ["pydantic.mypy"]
 
 # --- Strictness rules ---
 check_untyped_defs = true
