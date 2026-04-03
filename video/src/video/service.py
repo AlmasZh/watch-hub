@@ -14,7 +14,7 @@ from .models import Movie, UserVideo
 async def get_movies(db: AsyncSession) -> list[Movie]:
     stmt = select(Movie)
     res = await db.execute(stmt)
-    movies = res.scalars().all()
+    movies = list(res.scalars().all())
     return movies
 
 
@@ -31,7 +31,7 @@ async def get_movie_by_uuid(uuid: UUID, db: AsyncSession) -> Movie:
 async def get_all_user_videos(owner_id: int, db: AsyncSession) -> list[UserVideo]:
     stmt = select(UserVideo).where(UserVideo.owner_id == owner_id)
     res = await db.execute(stmt)
-    user_videos = res.scalars().all()
+    user_videos = list(res.scalars().all())
     return user_videos
 
 
