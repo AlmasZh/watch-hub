@@ -1,64 +1,61 @@
-# This config was automatically generated from your source code
-# Stacks detected: cicd:github-actions:.github/workflows,deps:node:frontend,deps:python:video
 version: 2.1
-orbs:
-  node: circleci/node@5
-  python: circleci/python@2
+
+# 1. Define reusable logic (replaces your custom setup-frontend action)
+commands:
+  setup-frontend:
+    parameters:
+      pnpm-version:
+        type: string
+        default: "9"
+    steps:
+      - checkout
+      - run:
+          name: Install pnpm
+          command: |
+            corepack enable
+            corepack prepare pnpm@<< parameters.pnpm-version >> --activate
+      - restore_cache:
+          keys:
+            - v1-deps-{{ checksum "frontend/pnpm-lock.yaml" }}
+      - run:
+          name: Install dependencies
+          working_directory: frontend
+          command: pnpm install
+      - save_cache:
+          key: v1-deps-{{ checksum "frontend/pnpm-lock.yaml" }}
+          paths:
+            - frontend/node_modules
+
+# 2. Define the execution environment
+executors:
+  node-docker:
+    docker:
+      - image: cimg/node:20.0 # Or your preferred Node version
+    working_directory: ~/project
+
+# 3. Define the Jobs
 jobs:
-  build-node:
-    # Build node project
-    executor: node/default
-    working_directory: ~/project/frontend
+  lint:
+    executor: node-docker
     steps:
-      - checkout:
-          path: ~/project
-      - node/install-packages:
-          pkg-manager: npm
+      - setup-frontend
       - run:
-          command: npm run build
-      - run:
-          name: Create the ~/artifacts directory if it doesn't exist
-          command: mkdir -p ~/artifacts
-      # Copy output to artifacts dir
-      - run:
-          name: Copy artifacts
-          command: cp -R build dist public .output .next .docusaurus ~/artifacts 2>/dev/null || true
-      - store_artifacts:
-          path: ~/artifacts
-          destination: node-build
-  test-python:
-    # Install dependencies and run tests
-    docker:
-      - image: cimg/python:3.8-node
-    working_directory: ~/project/video
+          name: Lint
+          working_directory: frontend
+          command: pnpm lint
+
+  type-check:
+    executor: node-docker
     steps:
-      - checkout:
-          path: ~/project
-      - python/install-packages
+      - setup-frontend
       - run:
-          name: Run tests
-          command: pytest --junitxml=junit.xml || ((($? == 5)) && echo 'Did not find any tests to run.')
-      - store_test_results:
-          path: junit.xml
-  deploy:
-    # This is an example deploy job, not actually used by the workflow
-    docker:
-      - image: cimg/base:stable
-    steps:
-      # Replace this with steps to deploy to users
-      - run:
-          name: deploy
-          command: '#e.g. ./deploy.sh'
-      - run:
-          name: found github actions config
-          command: ':'
+          name: Type check
+          working_directory: frontend
+          command: pnpm type-check
+
+# 4. Define the Workflow
 workflows:
-  build-and-test:
+  Frontend CI:
     jobs:
-      - build-node:
-          requires:
-            - test-python
-      - test-python
-    # - deploy:
-    #     requires:
-    #       - build-node
+      - lint
+      - type-check
