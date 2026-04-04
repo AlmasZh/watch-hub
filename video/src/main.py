@@ -1,3 +1,4 @@
+from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -20,7 +21,7 @@ prefix = settings.api_prefix
 
 
 @asynccontextmanager
-async def lifespan(_app: FastAPI):
+async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
     auth_grpc_client.connect()
     yield
 
@@ -44,5 +45,5 @@ app.include_router(upload_router, prefix=prefix)
 
 
 @app.get(f"{prefix}/health")
-async def health_check():
+async def health_check() -> dict[str, str]:
     return {"message": "ok"}

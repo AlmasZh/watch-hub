@@ -78,7 +78,7 @@ services:
     # ports:
     #   - "8080:8081"
     entrypoint: ["/usr/local/bin/init_video_data.sh"]
-    command: [ "uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8080", "--reload" ]
+    command: [ "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080", "--reload" ]
     environment:
       - DB_USER=${DB_USER}
       - DB_NAME=video
