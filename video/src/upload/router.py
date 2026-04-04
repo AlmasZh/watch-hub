@@ -1,5 +1,4 @@
 import uuid
-from typing import cast
 
 from fastapi import APIRouter, HTTPException, status
 from sqlalchemy.exc import SQLAlchemyError
@@ -49,7 +48,7 @@ async def complete_multipart_upload(
     db: SessionDep,
 ) -> UserVideo:
     parts_dict: list[CompletedPartTypeDef] = [
-        cast(CompletedPartTypeDef, part.model_dump(by_alias=True))
+        CompletedPartTypeDef(PartNumber=part.part_number, ETag=part.etag)
         for part in request.parts
     ]
 
