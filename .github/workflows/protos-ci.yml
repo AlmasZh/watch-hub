@@ -1,0 +1,28 @@
+name: Protos CI
+on:
+  push:
+    branches: [ "develop" ]
+    paths: 
+      - 'protos/**'
+  pull_request:
+    branches: [ "develop" ]
+    paths:
+      - 'protos/**'
+
+jobs:
+  protos-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: bufbuild/buf-setup-action@v1
+
+      - name: Lint protobuf files
+        uses: bufbuild/buf-lint-action@v1
+        with:
+          input: 'protos'
+
+      - name: Check for breaking changes
+        uses: bufbuild/buf-breaking-action@v1
+        with:
+          input: 'protos'
+          against: 'https://github.com/${{ github.repository }}.git#branch=develop,subdir=protos'
