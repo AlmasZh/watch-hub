@@ -13,6 +13,7 @@ FROM dhi.io/node:24-alpine3.23
 WORKDIR /app
 
 COPY --from=build /app/.next/standalone ./
+COPY --from=build /app/public ./public
 COPY --from=build /app/.next/static ./.next/static
 COPY ./prod-loader.js ./loader.js
 
