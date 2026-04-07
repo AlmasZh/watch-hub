@@ -1,3 +1,26 @@
+[project]
+name = "video"
+version = "0.1.0"
+description = "Video service for Watch-Hub Project"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "aioboto3>=15.5.0",
+    "alembic>=1.18.4",
+    "asyncpg>=0.31.0",
+    "fastapi>=0.135.3",
+    "grpcio==1.78.0",
+    "grpcio-tools==1.78.0",
+    "pydantic-settings>=2.13.1",
+    "python-multipart>=0.0.24",
+    "sqlalchemy>=2.0.49",
+    "uvicorn[standard]>=0.44.0",
+]
+[dependency-groups]
+dev = [
+    "types-aioboto3[s3]>=15.5.0",
+]
+
 [tool.ruff]
 lint.select = [
     "E",   # pycodestyle errors
