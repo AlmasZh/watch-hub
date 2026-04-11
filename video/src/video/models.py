@@ -19,16 +19,15 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from models import Base
 
 
-class MediaStatus(str, Enum):
+class MediaStatus(Enum):
     PENDING = "pending"  # Uploaded
     PROCESSING = "processing"
     READY = "ready"  # Ready to stream
     FAILED = "failed"
 
 
-class VideoPrivacy(
-    str, Enum
-):  # This is unnecessary currently, but may be needed in the future
+class VideoPrivacy(Enum):  
+    # This class unnecessary currently, but may be needed in the future
     PUBLIC = "public"
     PRIVATE = "private"
     UNLISTED = "unlisted"
