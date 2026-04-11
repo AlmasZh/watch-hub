@@ -9,11 +9,6 @@ WORKDIR /app
 COPY uv.lock pyproject.toml ./
 RUN uv sync --frozen --no-dev
 
-ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1 \
-    PYTHONPATH=/app/src \
-    PATH=/app/.venv/bin:$PATH
-
 FROM dhi.io/python:3.13-debian13
 
 WORKDIR /app
