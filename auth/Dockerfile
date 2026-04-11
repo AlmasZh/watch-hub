@@ -1,12 +1,30 @@
-FROM python:3.13-slim
+FROM dhi.io/python:3.13-debian13-dev AS build
+
+
+COPY --from=dhi.io/uv:0-debian12 /usr/local/bin/uv \
+/usr/local/bin/uvx /usr/local/bin/
 
 WORKDIR /app
 
-ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1
-ENV PYTHONPATH=/app/src
+COPY uv.lock pyproject.toml ./
+RUN uv sync --frozen --no-dev
 
-COPY requirements/prod.txt .
-RUN pip install --no-cache-dir -r requirements/prod.txt
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONPATH=/app/src \
+    PATH=/app/.venv/bin:$PATH
+
+FROM dhi.io/python:3.13-debian13
+
+WORKDIR /app
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONPATH=/app/src \
+    PATH=/app/.venv/bin:$PATH
+
+COPY --from=build /app/.venv /app/.venv
+COPY ./src .
+
+EXPOSE 8080
 
 CMD [ "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080" ]
