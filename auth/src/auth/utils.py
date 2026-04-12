@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 import jwt
 from fastapi import HTTPException, status
@@ -20,7 +20,7 @@ class TokenPayload(BaseModel):
 
 
 def generate_jwt_token(sub: str | int, expires_in_minutes: int) -> str:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
 
     payload = {
         "sub": str(sub),

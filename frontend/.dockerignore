@@ -1,9 +1,28 @@
-Dockerfile
-.dockerignore
+# Ignore node modules
 node_modules
+
+# Ignore logs
 npm-debug.log
-README.md
-.next
+
+# Ignore git and editor folders
 .git
 .gitignore
+.vscode
+.idea
+
+# Ignore local OS files
 .DS_Store
+
+# Ignore build outputs and cache
+.next
+out
+dist
+coverage
+
+# Ignore Dockerfile and dockerignore
+Dockerfile
+Dockerfile.dev
+.dockerignore
+
+# Ignore README.md
+README.md

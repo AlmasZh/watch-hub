@@ -32,7 +32,7 @@ class Settings(BaseSettings):
     auth_addr: str = "http://wh.com/api/auth"
 
     api_prefix: str = "/api/video"
-    app_env: Literal["dev", "test", "prod"] = "prod"
+    app_env: Literal["local", "dev", "test", "prod", "staging"] = "prod"
 
     @property
     def db_url(self) -> str:
