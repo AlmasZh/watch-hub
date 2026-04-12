@@ -26,7 +26,7 @@ class MediaStatus(Enum):
     FAILED = "failed"
 
 
-class VideoPrivacy(Enum):  
+class VideoPrivacy(Enum):
     # This class unnecessary currently, but may be needed in the future
     PUBLIC = "public"
     PRIVATE = "private"
