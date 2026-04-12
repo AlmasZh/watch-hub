@@ -10,10 +10,12 @@ FROM dhi.io/node:24-alpine3.23
 
 WORKDIR /app
 
-COPY --from=build /app/.next/standalone ./
-COPY --from=build /app/public ./public
-COPY --from=build /app/.next/static ./.next/static
-COPY ./prod-loader.js ./loader.js
+COPY --from=build --chown=node:node /app/.next/standalone ./
+COPY --from=build --chown=node:node /app/public ./public
+COPY --from=build --chown=node:node /app/.next/static ./.next/static
+COPY --chown=node:node ./prod-loader.js ./loader.js
+
+USER node
 
 EXPOSE 3000
 ENTRYPOINT [ "node", "loader.js" ]
