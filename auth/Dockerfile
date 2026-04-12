@@ -18,7 +18,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PATH=/app/.venv/bin:$PATH
 
 COPY --from=build /app/.venv /app/.venv
-COPY ./src .
+COPY ./src /app/src
 
 EXPOSE 8080
 
