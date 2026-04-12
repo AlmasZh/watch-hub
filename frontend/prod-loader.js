@@ -1,5 +1,4 @@
 const fs = require('fs');
-const path = require('path');
 
 const secretPath = '/run/secrets/jwt_public';
 if (fs.existsSync(secretPath)) {
