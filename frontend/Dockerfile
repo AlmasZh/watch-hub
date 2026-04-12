@@ -5,8 +5,6 @@ WORKDIR /app
 COPY . .
 RUN npm ci
 RUN npm run build
-RUN ls
-RUN ls .next/ 
 
 FROM dhi.io/node:24-alpine3.23
 
