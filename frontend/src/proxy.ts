@@ -4,24 +4,26 @@ import { jwtVerify, importSPKI } from 'jose';
 import { getJwtPublicKey } from '@/utils/auth-config';
 
 const PUBLIC_ROUTES = ['/login', '/register'];
+const publicKey = getJwtPublicKey();
+const secretPromise = importSPKI(publicKey, 'RS256');
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const refreshToken = request.cookies.get('refresh_token')?.value;
-  const publicKey = getJwtPublicKey();
 
   if (pathname === '/' || PUBLIC_ROUTES.some((route) => pathname.startsWith(route))) {
     return NextResponse.next();
   }
 
   if (!refreshToken) {
-    return NextResponse.redirect(new URL('/login', request.url));
+    const loginUrl = new URL('/login', request.url);
+    loginUrl.searchParams.set('next', pathname);
+    return NextResponse.redirect(loginUrl);
   }
 
   try {
-    const secret = await importSPKI(publicKey, 'RS256');
+    const secret = await secretPromise
     await jwtVerify(refreshToken, secret);
-
     return NextResponse.next();
   } catch (error) {
     if (process.env.NODE_ENV !== 'production') {
