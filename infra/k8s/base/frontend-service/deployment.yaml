@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-deployment
+spec:
+  selector:
+    matchLabels:
+      app: web-service
+  template:
+    metadata:
+      labels:
+        app: web-service
+    spec:
+      volumes:
+        - name: jwt-secrets
+          secret:
+            secretName: jwt-keys
+            defaultMode: 420
+      containers:
+        - name: web-deployment
+          image: watch-hub-web:latest
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: frontend-testing
+          env:
+            - name: HOSTNAME
+              value: "0.0.0.0"
+          volumeMounts:
+            - name: jwt-secrets
+              mountPath: "/etc/secrets"
+              readOnly: true
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "250m"
+            limits:
+              memory: "256Mi"
+              cpu: "500m"
+          ports:
+          - containerPort: 3000
+      imagePullSecrets:
+        - name: ghcr-login
