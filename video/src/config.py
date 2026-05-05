@@ -6,7 +6,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
-        env_file=".env", secrets_dir="/run/secrets", extra="ignore"
+        env_file=".env", secrets_dir="/etc/secrets", extra="ignore"
     )
 
     db_scheme: str = "postgresql+asyncpg"

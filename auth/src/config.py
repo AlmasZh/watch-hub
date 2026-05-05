@@ -34,7 +34,7 @@ class Settings:
 
     def _get_secret(self, secret_name: str) -> str | None:
         try:
-            with open(f"/run/secrets/{secret_name}") as f:
+            with open(f"/etc/secrets/{secret_name}") as f:
                 return f.read().strip()
         except OSError:
             return None
