@@ -22,10 +22,11 @@ services:
     image: postgres
     restart: 'unless-stopped'
     secrets:
-      - db_password
+      - target: /etc/secrets/db_password
+        source: db_password
     environment:
       - POSTGRES_INITDB_ARGS=--auth-host=scram-sha-256 --auth-local=scram-sha-256
-      - POSTGRES_PASSWORD_FILE=/run/secrets/db_password
+      - POSTGRES_PASSWORD_FILE=/etc/secrets/db_password
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_DB=${DB_NAME}
     healthcheck:
@@ -45,9 +46,12 @@ services:
       dockerfile: Dockerfile.local
     restart: 'on-failure'
     secrets:
-      - db_password
-      - jwt_private
-      - jwt_public
+      - target: /etc/secrets/db_password
+        source: db_password
+      - target: /etc/secrets/jwt_private
+        source: jwt_private
+      - target: /etc/secrets/jwt_public
+        source: jwt_public
     environment:
       - DB_USER=${DB_USER}
       - DB_NAME=auth
@@ -99,8 +103,10 @@ services:
     volumes:
       - "./scripts/init_video_data.sh:/usr/local/bin/init_video_data.sh"
     secrets:
-      - jwt_public
-      - db_password
+      - target: /etc/secrets/jwt_public
+        source: jwt_public
+      - target: /etc/secrets/db_password
+        source: db_password
     networks:
       - wh-internal
     depends_on:
@@ -121,7 +127,8 @@ services:
       - NEXT_PUBLIC_IMAGES_CLOUDFRONT_URL=dk3at0kil7p4c.cloudfront.net
     restart: 'on-failure'
     secrets:
-      - jwt_public
+      - target: /etc/secrets/jwt_public
+        source: jwt_public
     networks:
       - wh-internal
 
