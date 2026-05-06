@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: video-deployment
+spec:
+  selector:
+    matchLabels:
+      app: video-service
+  template:
+    metadata:
+      labels:
+        app: video-service
+    spec:
+      volumes:
+        - name: db-password
+          secret:
+            secretName: db-password
+        - name: jwt-secrets
+          secret:
+            secretName: jwt-keys
+        - name: init-video-data
+          configMap:
+            name: video-config
+            defaultMode: 0755
+      containers:
+        - name: video-deployment
+          image: watch-hub-video:latest
+          imagePullPolicy: IfNotPresent
+          command: ["/usr/local/bin/init_video_data.sh"]
+          args: [ "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080", "--reload" ]
+          envFrom:
+            - configMapRef:
+                name: video-config
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - name: db-password
+              mountPath: "/etc/secrets/db_password"
+              subPath: "db_password"
+              readOnly: true
+            - name: jwt-secrets
+              mountPath: "/etc/secrets/jwt_public"
+              subPath: "jwt_public"
+              readOnly: true
+            - name: init-video-data
+              mountPath: "/usr/local/bin/init_video_data.sh"
+              subPath: "init_video_data.sh"
