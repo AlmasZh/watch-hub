@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: auth-config
+data:
+  DB_USER: "almas"
+  DB_NAME: "auth"
+  DB_HOST: "db-service"
+  DB_PORT: "5432"
+  DB_SCHEME: "postgresql+asyncpg"
+  USE_SECURE_COOKIES: "False"
+  GRPC_ADDR: "0.0.0.0:50051"
+  APP_ENV: "local"
