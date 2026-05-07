@@ -18,16 +18,10 @@ spec:
         - name: jwt-secrets
           secret:
             secretName: jwt-keys
-        - name: init-video-data
-          configMap:
-            name: video-config
-            defaultMode: 0755
       containers:
         - name: video-deployment
           image: watch-hub-video:latest
           imagePullPolicy: IfNotPresent
-          command: ["/usr/local/bin/init_video_data.sh"]
-          args: [ "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080", "--reload" ]
           envFrom:
             - configMapRef:
                 name: video-config
@@ -42,6 +36,3 @@ spec:
               mountPath: "/etc/secrets/jwt_public"
               subPath: "jwt_public"
               readOnly: true
-            - name: init-video-data
-              mountPath: "/usr/local/bin/init_video_data.sh"
-              subPath: "init_video_data.sh"
