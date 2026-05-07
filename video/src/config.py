@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     db_port: int = 5432
     db_user: str = "user"
     db_name: str = "video"
+    db_ssl_mode: str = "require"
 
     db_password: SecretStr
 
@@ -36,7 +37,7 @@ class Settings(BaseSettings):
 
     @property
     def db_url(self) -> str:
-        return f"{self.db_scheme}://{self.db_user}:{self.db_password.get_secret_value()}@{self.db_host}:{self.db_port}/{self.db_name}"
+        return f"{self.db_scheme}://{self.db_user}:{self.db_password.get_secret_value()}@{self.db_host}:{self.db_port}/{self.db_name}?ssl={self.db_ssl_mode}"
 
     @property
     def stream_url_prefix(self) -> str:
