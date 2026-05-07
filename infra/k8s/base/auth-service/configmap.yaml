@@ -5,9 +5,10 @@ metadata:
 data:
   DB_USER: "almas"
   DB_NAME: "auth"
-  DB_HOST: "db-service"
+  DB_HOST: "ep-autumn-cell-alfmgzkg-pooler.c-3.eu-central-1.aws.neon.tech"
   DB_PORT: "5432"
   DB_SCHEME: "postgresql+asyncpg"
+  DB_SSL_MODE: "require"
   USE_SECURE_COOKIES: "False"
   GRPC_ADDR: "0.0.0.0:50051"
-  APP_ENV: "local"
+  APP_ENV: "staging"
