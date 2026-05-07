@@ -53,15 +53,16 @@ services:
       - target: /etc/secrets/jwt_public
         source: jwt_public
     environment:
-      - USE_SECURE_COOKIES=False
       - DB_USER=${DB_USER}
       - DB_NAME=auth
       - DB_HOST=db
       - DB_PORT=5432
       - DB_SCHEME=postgresql+asyncpg
+      - DB_SSL_MODE=prefer
+
+      - USE_SECURE_COOKIES=False
       - GRPC_ADDR=0.0.0.0:50051
-    # ports:
-    #   - "8080:8080"
+      - APP_ENV=dev
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/api/auth/health"]
       interval: 5s
@@ -79,8 +80,6 @@ services:
     build:
       context: ../video
       dockerfile: Dockerfile.dev
-    # ports:
-    #   - "8080:8081"
     entrypoint: ["/usr/local/bin/init_video_data.sh"]
     command: [ "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080", "--reload" ]
     environment:
@@ -89,7 +88,20 @@ services:
       - DB_HOST=db
       - DB_PORT=5432
       - DB_SCHEME=postgresql+asyncpg
+      - DB_SSL_MODE=prefer
+
       - GRPC_ADDR=auth:50051
+
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - AWS_REGION=us-east-1
+
+      - S3_ENDPOINT_URL=http://localhost.localstack.cloud:4566
+      - S3_BUCKET_NAME=my-test-bucket
+      - S3_FORCE_PATH_STYLE=True     # Set to True for localstack
+
+      - APP_ENV=dev
+      - AUTH_ADDR=http://wh.com/api/auth
     volumes:
       - "../video:/app"
       - "./scripts/init_video_data.sh:/usr/local/bin/init_video_data.sh"
@@ -114,8 +126,6 @@ services:
     restart: 'on-failure'
     entrypoint: ["/usr/local/bin/load_public_key.sh"]
     command: ["npm", "run", "dev"]
-    # ports:
-    #   - "3000:3000"
     volumes:
       - "../frontend:/app"
       - "./scripts/load_public_key.sh:/usr/local/bin/load_public_key.sh"
