@@ -58,6 +58,7 @@ services:
       - DB_HOST=db
       - DB_PORT=5432
       - DB_SCHEME=postgresql+asyncpg
+      - DB_SSL_MODE=prefer
 
       - USE_SECURE_COOKIES=False
       - GRPC_ADDR=0.0.0.0:50051
@@ -87,6 +88,7 @@ services:
       - DB_HOST=db
       - DB_PORT=5432
       - DB_SCHEME=postgresql+asyncpg
+      - DB_SSL_MODE=prefer
 
       - GRPC_ADDR=auth:50051
 
