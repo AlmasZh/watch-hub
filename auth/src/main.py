@@ -23,7 +23,8 @@ prefix = settings.API_PREFIX
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
-    await setup_database()
+    if settings.APP_ENV in ["dev", "local", "test"]:
+        await setup_database()
     grpc_server = await start_grpc_server()
     yield
     await grpc_server.stop(grace=5)
