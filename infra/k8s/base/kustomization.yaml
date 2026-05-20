@@ -1,5 +1,5 @@
 resources:
-  - frontend-service
   - auth-service
+  - frontend-service
+  - localstack-service
   - video-service
-  # - localstack-service
