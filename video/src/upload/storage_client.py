@@ -24,7 +24,7 @@ class S3StorageClient:
         force_path_style: bool = False,
     ) -> None:
         self.bucket_name = bucket_name
-        self.endpoint_url = endpoint_url
+        self.endpoint_url = endpoint_url if endpoint_url else None
 
         self.boto_config = (
             AioConfig(s3={"addressing_style": "path"}, signature_version="s3v4")

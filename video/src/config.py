@@ -1,6 +1,6 @@
 from typing import Literal
 
-from pydantic import SecretStr
+from pydantic import SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -26,7 +26,7 @@ class Settings(BaseSettings):
     aws_access_key_id: str
     aws_secret_access_key: str
     aws_region: str
-    s3_endpoint_url: str
+    s3_endpoint_url: str | None = None
     s3_force_path_style: bool = False
 
     grpc_addr: str = "auth:50051"
@@ -34,6 +34,12 @@ class Settings(BaseSettings):
 
     api_prefix: str = "/api/video"
     app_env: Literal["local", "dev", "test", "prod", "staging"] = "prod"
+
+    @field_validator("s3_endpoint_url", mode="before")
+    def empty_str_to_none(cls, v):
+        if v == "":
+            return None
+        return v
 
     @property
     def db_url(self) -> str:
