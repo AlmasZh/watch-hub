@@ -59,7 +59,6 @@ class Settings:
 
     @property
     def DB_URL(self) -> str:
-        print(f'\n\n{self.DB_NAME}\n\n')
         return f"{self.DB_SCHEME}://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}?ssl={self.DB_SSL_MODE}"
 
 
