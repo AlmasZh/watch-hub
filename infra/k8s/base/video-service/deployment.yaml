@@ -25,6 +25,17 @@ spec:
           envFrom:
             - configMapRef:
                 name: video-config
+          env:
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: s3-secret
+                  key: access_key
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: s3-secret
+                  key: secret
           ports:
             - containerPort: 8080
           volumeMounts:
