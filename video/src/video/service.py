@@ -6,11 +6,11 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from auth.schemas import User
+from upload.dependencies import storage_client
 
 from .exceptions import ForbiddenError, NotFoundError
 from .models import Movie, UserVideo
 from .schemas import UserVideoResponse, user_video_adapter
-from upload.dependencies import storage_client
 
 
 async def get_movies(db: AsyncSession) -> list[Movie]:
@@ -40,7 +40,7 @@ async def get_all_user_videos(owner_id: int, db: AsyncSession) -> list[UserVideo
             status_code=status.HTTP_404_NOT_FOUND, detail="User videos not found"
         )
 
-    for r, v in zip(user_videos_response, user_videos):
+    for r, v in zip(user_videos_response, user_videos, strict=True):
         r.stream_url = await storage_client.get_video_url(v.storage_key, 3600)
 
     return user_videos_response
