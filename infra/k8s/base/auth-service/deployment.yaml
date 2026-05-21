@@ -12,9 +12,9 @@ spec:
         app: auth-service
     spec:
       volumes:
-        - name: db-password
+        - name: db-secret
           secret:
-            secretName: db-password
+            secretName: db-secret
         - name: jwt-secrets
           secret:
             secretName: jwt-keys
@@ -29,7 +29,7 @@ spec:
             - containerPort: 8080
             - containerPort: 50051
           volumeMounts:
-            - name: db-password
+            - name: db-secret
               mountPath: "/etc/secrets/db_password"
               subPath: "db_password"
               readOnly: true

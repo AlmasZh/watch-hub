@@ -12,12 +12,19 @@ spec:
         app: video-service
     spec:
       volumes:
-        - name: db-password
-          secret:
-            secretName: db-password
-        - name: jwt-secrets
-          secret:
-            secretName: jwt-keys
+        - name: combined-secrets
+          projected:
+            sources:
+              - secret:
+                  name: jwt-keys
+                  items:
+                    - key: jwt_public
+                      path: jwt_public
+              - secret:
+                  name: db-secret
+                  items:
+                    - key: db_password
+                      path: db-password
       containers:
         - name: video-deployment
           image: watch-hub-video:latest
@@ -39,11 +46,6 @@ spec:
           ports:
             - containerPort: 8080
           volumeMounts:
-            - name: db-password
-              mountPath: "/etc/secrets/db_password"
-              subPath: "db_password"
-              readOnly: true
-            - name: jwt-secrets
-              mountPath: "/etc/secrets/jwt_public"
-              subPath: "jwt_public"
+            - name: combined-secrets
+              mountPath: "/etc/secrets"
               readOnly: true
