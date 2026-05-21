@@ -4,6 +4,7 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, HttpUrl
 from pydantic.alias_generators import to_camel
+from pydantic.type_adapter import TypeAdapter
 
 
 class MovieResponse(BaseModel):
@@ -45,3 +46,5 @@ class UserVideoResponse(BaseModel):
 
     created_at: datetime
     updated_at: datetime
+
+user_video_adapter = TypeAdapter(list[UserVideoResponse])

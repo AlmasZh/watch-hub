@@ -43,6 +43,22 @@ class S3StorageClient:
             "s3", endpoint_url=self.endpoint_url, config=self.boto_config
         )
 
+    async def get_video_url(self, object_key: str, expires_in: int = 3600) -> str:
+        try:
+            async with self.get_client() as s3:
+                url = await s3.generate_presigned_url(
+                    ClientMethod="get_object",
+                    Params={
+                        "Bucket": self.bucket_name,
+                        "Key": object_key,
+                    },
+                    ExpiresIn=expires_in,
+                )
+                return url
+        except ClientError as e:
+            print(f"Failed to generate read URL for {object_key}: {e}")
+            raise
+
     async def create_multipart_upload(
         self, object_key: str, content_type: str = "video/mp4"
     ) -> str:
