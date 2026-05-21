@@ -36,7 +36,7 @@ class Settings(BaseSettings):
     app_env: Literal["local", "dev", "test", "prod", "staging"] = "prod"
 
     @field_validator("s3_endpoint_url", mode="before")
-    def empty_str_to_none(cls, v):
+    def empty_str_to_none(cls, v: str) -> str | None:
         if v == "":
             return None
         return v
