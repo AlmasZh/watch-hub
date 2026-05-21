@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   name: frontend-testing
 data:
-  next_public_api_url: "http://wh.com/api"
-  next_public_ws_url: "ws://wh.com"
-  next_public_cloudfront_url: "https://d24lanzu8wxnoe.cloudfront.net/:path*"
-  next_public_images_cloudfront_url: "dk3at0kil7p4c.cloudfront.net"
+  NEXT_PUBLIC_API_URL: "http://wh.com/api"
+  NEXT_PUBLIC_WS_URL: "ws://wh.com"
+  NEXT_PUBLIC_CLOUDFRONT_URL: "https://d24lanzu8wxnoe.cloudfront.net/:path*"
+  NEXT_PUBLIC_IMAGES_CLOUDFRONT_URL: "dk3at0kil7p4c.cloudfront.net"
