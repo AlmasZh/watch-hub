@@ -1,0 +1,23 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: video-route
+  namespace: default
+spec:
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: traefik-gateway
+  hostnames:
+    - "wh.com"
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /api/video
+      backendRefs:
+        - group: ""
+          kind: Service
+          name: video-service
+          weight: 1
+          port: 8080

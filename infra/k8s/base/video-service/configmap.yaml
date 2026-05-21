@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: video-config
+data:
+  DB_USER: "almas"
+  DB_NAME: "video"
+  DB_HOST: "ep-autumn-cell-alfmgzkg-pooler.c-3.eu-central-1.aws.neon.tech"
+  DB_PORT: "5432"
+  DB_SCHEME: "postgresql+asyncpg"
+  GRPC_ADDR: "auth-service:50051"
+  AWS_REGION: "us-east-1"
+  S3_ENDPOINT_URL: "http://localstack-svc:4566"
+  S3_BUCKET_NAME: "my-test-bucket"
+  S3_FORCE_PATH_STYLE: "True"
+  APP_ENV: "staging"
+  AUTH_ADDR: "http://auth-service:8080/api/auth"

@@ -1,0 +1,5 @@
+resources:
+  - auth-service
+  - frontend-service
+  - localstack-service
+  - video-service

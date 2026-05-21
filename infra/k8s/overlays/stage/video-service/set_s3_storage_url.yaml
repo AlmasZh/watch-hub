@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: video-config
+data:
+  S3_ENDPOINT_URL: ""
+  AWS_REGION: "eu-central-1"
+  S3_BUCKET_NAME: "amzn-wh-project-user-videos"
+  S3_FORCE_PATH_STYLE: "False"
+  APP_ENV: "staging"

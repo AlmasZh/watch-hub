@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-deployment
+spec:
+  selector:
+    matchLabels:
+      app: auth-service
+  template:
+    metadata:
+      labels:
+        app: auth-service
+    spec:
+      volumes:
+        - name: db-secret
+          secret:
+            secretName: db-secret
+        - name: jwt-secrets
+          secret:
+            secretName: jwt-keys
+      containers:
+        - name: auth-deployment
+          image: watch-hub-auth:latest
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: auth-config
+          ports:
+            - containerPort: 8080
+            - containerPort: 50051
+          volumeMounts:
+            - name: db-secret
+              mountPath: "/etc/secrets/db_password"
+              subPath: "db_password"
+              readOnly: true
+            - name: jwt-secrets
+              mountPath: "/etc/secrets/jwt_public"
+              subPath: "jwt_public"
+              readOnly: true
+            - name: jwt-secrets
+              mountPath: "/etc/secrets/jwt_private"
+              subPath: "jwt_private"
+              readOnly: true

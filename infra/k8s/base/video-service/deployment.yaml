@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: video-deployment
+spec:
+  selector:
+    matchLabels:
+      app: video-service
+  template:
+    metadata:
+      labels:
+        app: video-service
+    spec:
+      volumes:
+        - name: combined-secrets
+          projected:
+            sources:
+              - secret:
+                  name: jwt-keys
+                  items:
+                    - key: jwt_public
+                      path: jwt_public
+              - secret:
+                  name: db-secret
+                  items:
+                    - key: db_password
+                      path: db-password
+      containers:
+        - name: video-deployment
+          image: watch-hub-video:latest
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: video-config
+          env:
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: s3-secret
+                  key: access_key
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: s3-secret
+                  key: secret
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - name: combined-secrets
+              mountPath: "/etc/secrets"
+              readOnly: true

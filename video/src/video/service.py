@@ -6,9 +6,11 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from auth.schemas import User
+from upload.dependencies import storage_client
 
 from .exceptions import ForbiddenError, NotFoundError
 from .models import Movie, UserVideo
+from .schemas import UserVideoResponse, user_video_adapter
 
 
 async def get_movies(db: AsyncSession) -> list[Movie]:
@@ -27,13 +29,16 @@ async def get_movie_by_uuid(uuid: UUID, db: AsyncSession) -> Movie:
         )
     return movie
 
-
-async def get_all_user_videos(owner_id: int, db: AsyncSession) -> list[UserVideo]:
+async def get_all_user_videos(owner_id: int, db: AsyncSession) -> list[UserVideoResponse]:
     stmt = select(UserVideo).where(UserVideo.owner_id == owner_id)
     res = await db.execute(stmt)
     user_videos = list(res.scalars().all())
-    return user_videos
+    user_videos_response = user_video_adapter.validate_python(user_videos)
 
+    for r, v in zip(user_videos_response, user_videos, strict=True):
+        r.stream_url = await storage_client.get_video_url(v.storage_key, 3600)
+
+    return user_videos_response
 
 async def delete_user_video(video_uuid: UUID, user: User, db: AsyncSession) -> None:
     user_video = await db.get(UserVideo, video_uuid)
