@@ -1,0 +1,7 @@
+resources:
+  - ../../base/auth-service
+  - ../../base/frontend-service
+  - ../../base/video-service
+
+patches:
+  - path: video-service/set_s3_storage_url.yaml
