@@ -6,7 +6,7 @@ from auth.dependencies import UserDep
 from database import SessionDep
 
 from .exceptions import ForbiddenError, NotFoundError
-from .models import Movie, UserVideo
+from .models import Movie
 from .schemas import MovieResponse, UserVideoResponse
 from .service import (
     delete_user_video,
@@ -31,7 +31,7 @@ async def get_movie(uuid: UUID, db: SessionDep) -> Movie:
 
 
 @router.get("/videos", response_model=list[UserVideoResponse])
-async def get_user_videos(user: UserDep, db: SessionDep) -> list[UserVideo]:
+async def get_user_videos(user: UserDep, db: SessionDep) -> list[UserVideoResponse]:
     user_videos = await get_all_user_videos(owner_id=user.id, db=db)
     return user_videos
 
