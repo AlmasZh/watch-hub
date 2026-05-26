@@ -1,0 +1,29 @@
+.docker-login: &docker_login
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+
+
+stages:
+  - build
+  - upload
+
+build:
+  stage: build
+  image: docker:28
+  services:
+    - docker:28-dind
+  <<: *docker_login
+  script:
+    - docker compose -f infra/compose.staging.test.yaml build --parallel
+
+push:
+  stage: push
+  image: docker:28
+  services:
+    - docker:28-dind
+  needs: [build]
+  <<: *docker_login
+  script:
+    - docker compose -f infra/compose.staging.test.yaml push
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
