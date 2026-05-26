@@ -19,6 +19,7 @@ services:
         condition: service_started
 
   auth:
+    image: registry.gitlab.com/watch-hub/watch-hub/auth
     build:
       context: ../auth/
       dockerfile: Dockerfile.local
@@ -51,6 +52,7 @@ services:
       - wh-internal
 
   video:
+    image: registry.gitlab.com/watch-hub/watch-hub/video
     build:
       context: ../video
       dockerfile: Dockerfile.local
@@ -85,6 +87,7 @@ services:
         condition: service_healthy
 
   web:
+    image: registry.gitlab.com/watch-hub/watch-hub/web
     build:
       context: ../frontend
       dockerfile: Dockerfile
