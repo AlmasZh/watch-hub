@@ -1,6 +1,7 @@
 .docker-login: &docker_login
   before_script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD dhi.io
 
 
 stages:
