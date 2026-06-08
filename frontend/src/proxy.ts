@@ -10,19 +10,24 @@ const secretPromise = importSPKI(publicKey, 'RS256');
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const refreshToken = request.cookies.get('refresh_token')?.value;
+  const isPublicRoute = pathname === '/' || PUBLIC_ROUTES.some(
+    (route) => pathname === route || pathname.startsWith(`${route}/`)
+  )
 
-  if (pathname === '/' || PUBLIC_ROUTES.some((route) => pathname.startsWith(route))) {
+  if (isPublicRoute) {
     return NextResponse.next();
   }
 
+  const next = pathname + request.nextUrl.search;
+  const loginUrl = new URL('/login', request.url);
+  loginUrl.searchParams.set('next', next);
+
   if (!refreshToken) {
-    const loginUrl = new URL('/login', request.url);
-    loginUrl.searchParams.set('next', pathname);
     return NextResponse.redirect(loginUrl);
   }
 
   try {
-    const secret = await secretPromise
+    const secret = await secretPromise;
     await jwtVerify(refreshToken, secret);
     return NextResponse.next();
   } catch (error) {
@@ -31,7 +36,7 @@ export async function proxy(request: NextRequest) {
     } else {
       console.error('JWT verification failed in middleware');
     }
-    const response = NextResponse.redirect(new URL('/login', request.url));
+    const response = NextResponse.redirect(loginUrl);
     response.cookies.delete('refresh_token');
     return response;
   }
