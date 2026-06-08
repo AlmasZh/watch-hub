@@ -1,0 +1,18 @@
+.docker-login: &docker_login
+  before_script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
+    - echo "$DOCKER_PASSWORD" | docker login -u $DOCKER_USERNAME --password-stdin dhi.io
+
+
+stages:
+  - build
+
+build:
+  stage: build
+  image: docker:28
+  services:
+    - docker:28-dind
+  <<: *docker_login
+  script:
+    - docker compose -f infra/compose.staging.test.yaml build --parallel
+    - docker compose -f infra/compose.staging.test.yaml push
