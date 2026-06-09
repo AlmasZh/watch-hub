@@ -1,7 +1,9 @@
 import type { NextConfig } from "next";
 
+const imagesHostName = (process.env.NEXT_PUBLIC_IMAGES_CLOUDFRONT_URL || "cdn.example.com").replace(/^https?:\/\//, "")
+const rewriteDestination = process.env.NEXT_PUBLIC_CLOUDFRONT_URL || "https://cdn.example.com/:path"
+
 const nextConfig: NextConfig = {
-  /* config options here */
   output: "standalone",
   reactCompiler: true,
   images: {
@@ -13,7 +15,7 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: process.env.NEXT_PUBLIC_IMAGES_CLOUDFRONT_URL || "cdn.example.com",
+        hostname: imagesHostName,
         pathname: "/**",
       },
     ],
@@ -22,7 +24,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/video-proxy/:path*",
-        destination: process.env.NEXT_PUBLIC_CLOUDFRONT_URL || "cdn.example.com",
+        destination: rewriteDestination,
       },
     ];
   },
