@@ -61,9 +61,11 @@ export default function Sidebar() {
             {/* Bottom Section */}
             <div className="flex flex-col items-center gap-4 mt-auto py-4">
 
-                <button className="text-gray-400 hover:text-white transition-colors" title="Settings">
-                    <Settings size={22} />
-                </button>
+                <div className="text-gray-400 hover:text-white transition-colors" title="Settings">
+                    <Link href="/settings">
+                        <Settings size={22}/>
+                    </Link>
+                </div>
                 <button className="text-gray-400 hover:text-red-400 transition-colors" title="Logout">
                     <LogOut size={22} />
                 </button>
